@@ -34,14 +34,14 @@ Subject-oriented system development integrates established theories and concepts
 
 \subsection{Subject Interaction and Behavior}
 
-We introduce the basic concepts of process modeling in PASS using a simple order process. A customer sends an order to the order handling department of a supplier. He is going to receive an order confirmation and the ordered product by the shipment company. Figure \ref{fig:ordercomstructure} shows the communication structure of that process. The involved subjects and the messages they exchange can easily be grasped. 
+We introduce the basic concepts of process modeling in PASS using a simple order process. A customer sends an order to the order handling department of a supplier. He is going to receive an order confirmation and the ordered product by the shipment company. Figure \ref{fig:ordercomstructure1} shows the communication structure of that process. The involved subjects and the messages they exchange can easily be grasped. 
 
 %\strictpagecheck
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectExecution/OrderComStructure}
 	\caption[The Communication Structure in the Order Process]{The Communication Structure in the Order Process}
-	\label{fig:ordercomstructure}
+	\label{fig:ordercomstructure1}
 \end{figure}
 
 Each subject has a so-called input pool which is its mailbox for receiving messages. This input pool can be structured according to the business requirements at hand. The modeler can define how many messages of which type and/or from which sender can be deposited and what the reaction is if these restrictions are violated. This means the synchronization through message exchange can be specified for each subject individually.
@@ -60,14 +60,14 @@ In the first state of its behavior, the subject "customer" executes the internal
 
 The subject "Order Handling" waits for the message "order" from the subject "customer". If this message is in the input pool it is removed and the succeeding function "check order" is executed and so on.
 
-The behavior of each subject describes in which order it sends messages, expects (receives) and performs internal functions. Messages transport data from the sending to the receiving subject and internal functions operate on internal data of a subject. These data aspects of a subject are described in section \ref{SUbjects-Objects}. In a dynamic and fast-changing world, processes need to be able to capture known but unpredictable events. In our example let us assume that a customer can change an order. This means the subject "customer" may send the message "Change order" at any time. Figure\todo{AF: Bild und Text passen nicht Change order} \ref{fig:ordercomstructure} shows the corresponding communication structure, which now contains the message "change order".
+The behavior of each subject describes in which order it sends messages, expects (receives) and performs internal functions. Messages transport data from the sending to the receiving subject and internal functions operate on internal data of a subject. These data aspects of a subject are described in section \ref{SUbjects-Objects}. In a dynamic and fast-changing world, processes need to be able to capture known but unpredictable events. In our example let us assume that a customer can change an order. This means the subject "customer" may send the message "Change order" at any time. Figure\todo{AF: Bild und Text passen nicht Change order} \ref{fig:ordercomstructure2} shows the corresponding communication structure, which now contains the message "change order".
 
 %\strictpagecheck
 \begin{figure}[htbp]
 	\centering
 	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectExecution/OrderComStructure}
 	\caption[The Communication Structure with Change Message]{The Communication Structure with Change Message}
-	\label{fig:ordercomstructure}
+	\label{fig:ordercomstructure2}
 \end{figure}
 
 Due to this unpredictable event, the behavior of the involved subjects needs also to be adapted. Figure \ref{fig:ordercustomerchange} illustrates the respective behavior of the customer. 

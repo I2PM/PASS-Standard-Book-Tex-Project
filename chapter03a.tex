@@ -175,7 +175,7 @@ This relatively simple example already shows that taking such exception messages
 	\centering
 	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectExecution/Extension}
 	\caption[Behavior of subject 'employee' with exception handling]{Behavior of subject 'employee' with exception handling}
-	\label{fig:extension}
+	\label{fig:extension1}
 \end{figure}
 
 Instead of, as shown in Figure \ref{fig:exceptionhandling}, modeling receive states with a timeout zero and corresponding state transitions, the behavioral description is enriched with the exception handling 'service cancellation'. Its initial state is labeled with the states from which it is branched to, once the message 'service cancellation' is received. In the example, these are the states 'fill out Bt-request' and 'receive answer from manager'. Each of them is marked by a triangle on the right edge of the state symbol. The exception behavior leads to an exit of the subject after the message 'service cancellation' has been sent to the subject 'manager'.
@@ -191,7 +191,7 @@ When exceptions occur, currently running operations are interrupted. This can le
 
 Behavior extensions enrich a subject's behavior with behavior sequences that can be reached from several states equivocally.
 
-For example, the employee may be able to decide on his own that the business trip is no longer required and withdraw his trip request. Figure \ref{fig:extension} shows that the employee can cancel a business trip request in the states 'send business trip request to manager' and 'receive answer from manager'. If the transition 'withdraw business trip request' is executed in the state 'send business trip request to manager', then the extension 'F1' is activated. It leads merely to canceling of the application. Since the manager has not yet received a request, he does not need to be informed.
+For example, the employee may be able to decide on his own that the business trip is no longer required and withdraw his trip request. Figure \ref{fig:extension2} shows that the employee can cancel a business trip request in the states 'send business trip request to manager' and 'receive answer from manager'. If the transition 'withdraw business trip request' is executed in the state 'send business trip request to manager', then the extension 'F1' is activated. It leads merely to canceling of the application. Since the manager has not yet received a request, he does not need to be informed.
 
 In case the employee decides to withdraw the business trip request in the state 'receive answer from manager', then extension 'F2' is activated. Here, first the supervisor is informed, and then the business trip is canceled.
 
@@ -199,7 +199,7 @@ In case the employee decides to withdraw the business trip request in the state 
 	\centering
 	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectExecution/Extension}
 	\caption[Subject behavior of employee with behavior extensions]{Subject behavior of employee with behavior extensions}
-	\label{fig:extension}
+	\label{fig:extension2}
 \end{figure}
 
 \subsubsection{Alternative Actions (Freedom of Choice)} 
