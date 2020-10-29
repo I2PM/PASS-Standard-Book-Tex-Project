@@ -1,8 +1,10 @@
+%%%Config Preamble
+
 % !TeX spellcheck = en_US
 % Review Christian Stary January 2020
 % Merge mit Thomas Schaller Pfad Chapter 4
-
 % testcomment
+
 
 \RequirePackage{snapshot}
 \RequirePackage{etex}
@@ -14,11 +16,8 @@
 \let\deleted\relax    % neutralize \deleted command
 \let\comment\relax    % neutralize \comment command
 
-
-
 \usepackage[T1]{fontenc}
 \usepackage[textsize=footnotesize]{todonotes}
-
 \usepackage{morewrites}
 
 % prepare package changes for managing the review process
@@ -50,24 +49,16 @@
 \usepackage{longtable}
 \usepackage{pdfpages}
 \usepackage{caption}
-
 \usepackage{amssymb}
 \usepackage{program}
 \usepackage{mathtools}
 \usepackage{graphicx}
 \usepackage{minted}
-
-\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage{xargs}   % Use more than one optional parameter in a new commands
 \usepackage{xcolor}  % Coloured text etc.
+\usepackage{makeidx}
 
-
-
-
-
-
-
-
-
+%%%%%%%%%%%document configs
 \newmintinline[asminline]{lexer.py:CoreASMLexer -x}{escapeinside=~~}
 
 \setlistdepth{9}
@@ -117,17 +108,6 @@
 
 \checkandfixthelayout[lines]
 
-\title{Towards a Standard for Subject-oriented Modelling and Implementation\\ Specification and Implementation of Systems}
-\author{Stephan Borgert, Matthes Elstermann, Albert Fleischmann, \\ Reinhard Gniza, Herbert Kindermann, Florian Krenn,\\ Christian Stary, Werner Schmidt, Robert Singer, Florian Strecker, Andr\'e Wolski}
-
-% ToC down to subsections
-\settocdepth{subsection}
-% Numbering down to subsections as well
-\setsecnumdepth{subsection}
-
-% extra index for first lines
-%\makeindex[lines]
-
 % keine Links anzeigen
 \hypersetup{
 	colorlinks=false,
@@ -138,11 +118,21 @@
 
 \include{mathdef}
 
+% ToC down to subsections
+\settocdepth{subsection}
+% Numbering down to subsections as well
+\setsecnumdepth{subsection}
+
+\chapterstyle{veelo}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{Towards a Standard for Subject-oriented Modelling and Implementation\\ Specification and Implementation of Systems}
+\author{Stephan Borgert, Matthes Elstermann, Albert Fleischmann, \\ Reinhard Gniza, Herbert Kindermann, Florian Krenn,\\ Christian Stary, Werner Schmidt, Robert Singer, Florian Strecker, Andr\'e Wolski}
 
 
 \begin{document}
-
-\chapterstyle{veelo}
 
 \frontmatter
 
@@ -192,7 +182,7 @@
 	xyz\\
 	\medskip
 	Matthes Elstermann\\
-	xyz\\
+	Karlsruhe Institute of Technology, Germany\\
 	\medskip
 	Albert Fleischmann\\
 	InterAktiv Unternehmensberatung, Pfaffenhofen a.d. Ilm, Germany\\
@@ -298,9 +288,6 @@ The ids and colors for the various reviewers can be found in the preamble (line 
 
 \include{preface}
 
-
-
-
 \cleardoublepage
 
 \setupparasubsecs
@@ -330,6 +317,7 @@ The ids and colors for the various reviewers can be found in the preamble (line 
 
 %\bibliographystyle{IEEEtran}
 \bibliography{Standard}
+
 
 \listoftodos
 \listofchanges[style=list, show=all]

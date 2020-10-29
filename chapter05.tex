@@ -4,7 +4,7 @@
 
 \todo{CS: Hochkommas und - im pdf falsch gedruckt.}
 
-In this chapterr various aspects of the subject oriented modelling and programming concept are outlined. These aspects have already been published on different conferences. The following sections are based on these publications. CS: They contain original text parts and thus, the conclusions need to be aligned to the standardization effor, as tried for Fog Computing.
+In this chapter various aspects of the subject oriented modelling and programming concept are outlined. These aspects have already been published on different conferences. The following sections are based on these publications. CS: They contain original text parts and thus, the conclusions need to be aligned to the standardization effort, as tried for Fog Computing.
 The concepts described in theses sections will be part of future standardisation activities.
 The following sections are based on following publications:\\
 \begin{list}{-}
@@ -19,7 +19,7 @@ The following sections are based on following publications:\\
 
 \section{Subjects and Shared Input Pools}
 
-Shared input pools have the same structure like subject-specific ones, and thus, the same properties like the standard input pool. The only difference is that different subjects can deposit in or remove messages from a shared input pool. Subjects that want to send a message via a shared input pool do not use a subject name as addressee of a message, but the name of a shared input pool instead. In a distributed system several shared input pools for different purposes can be used. Figure 7 shows the slightly changed structure of the traffic management system when operating it with a shared input pool CS: hier fehlt das originäre Beispiel als Bezugspunkt. The subject "Car detection" represents the shared input pool.
+Shared input pools have the same structure like subject-specific ones, and thus, the same properties like the standard input pool. The only difference is that different subjects can deposit in or remove messages from a shared input pool. Subjects that want to send a message via a shared input pool do not use a subject name as addressee of a message, but the name of a shared input pool instead. In a distributed system several shared input pools for different purposes can be used. Figure 7 shows the slightly changed structure of the traffic management system when operating it with a shared input pool \todo{CS: hier fehlt das originäre Beispiel als Bezugspunkt.} The subject "Car detection" represents the shared input pool.
 
 
 \begin{figure}[htbp]
@@ -181,35 +181,42 @@ Each subject in the matrix corresponds to a subject in the subject communication
 Subject 'Customer-AO' is the start subject. It is the only subject which executes activities in the start phase of the S-PM Order. The succeeding phase 'Handle order' is executed by subject 'Forwarding Agent' therefore subject 'Customer' sends the message 'E-handle-Order' to subject 'Forwarding agent-AO'. This subject executes the activities in phase 'Handle Order' (see figure \ref{fig:S-PM-Order}). \\
 Figure \ref{fig:SBD-Customer-AO} shows the behavior of subject 'Customer-AO'. In order to see the relationship between the phases in the S-PM and the activities in the SBD the activities in the SBD belonging to certain phase in the S-PM have frames marked with the phase name.
 \begin{figure}[hbtp]
-	\includegraphics[scale=0.35]{Figures/Chapter5/Subject-Phase/SBD-Customer-AO_NEW.png}
+     \begin{center}
+	\includegraphics[width=0.6\textwidth]{Figures/Chapter5/Subject-Phase/SBD-Customer-AO_NEW.png}
 	\caption{SBD of Subject 'Customer-AO'}
 	\label{fig:SBD-Customer-AO}
+	 \end{center}
 \end{figure}
 After the activity 'prepare order' is finished the next phase is started by sending the message 'E-Handle-Order' to the subject 'Forwarding Agent-AO'. Than subject 'Customer-AO' is waiting for the message 'S-Handle-Order?' from subject 'ForwardingAgent-AO'. This is a support request which is sent by subject 'ForwardingAgent-AO' in phase 'Handle order'. The support activity is executed and the result is sent back to subject 'ForwardingAgent-AO'.
 The following figure \ref{fig:SBD-ForwardingAGentAO} shows the more complicate behavior of subject 'ForwardingAgent'. 
-The subject 'ForwardingAgent-AO' receives the message 'E-Handle-Order' from the subject 'Customer-AO' in phase “Handle Order” in the S-PM. After that message the subject 'ForwardingAgent-AO'  checks whether it need some support from the subject 'Customer-AO'. If support is required a corresponding support request message ('S-Handle-Order?') is sent to the subject 'Customer-AO'. After an answer has been received the subject 'ForwardingAgent-AO' continues its work and checks whether some additional support is required or the activities in that phase can be finished. If that phase is finished the subject 'ForwardingAgent-AO' continues its work in phase 'Execute Order'. Because the subject 'ForwardingAgent-AO' is also the excuting subject for phase 'Execute order' it is not necessary to send an E.message to the executing subject of the succeeding phase. In phase 'execute-orde' the subject 'ForwardingAgent-AO' starts also the process 'Execute-Transport' by sending the message 'E-Start-Execute-Process' to the subject 'Carrier-ET' which is a subject in process 'Execute Transport'.
+The subject 'ForwardingAgent-AO' receives the message 'E-Handle-Order' from the subject 'Customer-AO' in phase “Handle Order” in the S-PM. After that message the subject 'ForwardingAgent-AO'  checks whether it need some support from the subject 'Customer-AO'. If support is required a corresponding support request message ('S-Handle-Order?') is sent to the subject 'Customer-AO'. After an answer has been received the subject 'ForwardingAgent-AO' continues its work and checks whether some additional support is required or the activities in that phase can be finished. If that phase is finished the subject 'ForwardingAgent-AO' continues its work in phase 'Execute Order'. Because the subject 'ForwardingAgent-AO' is also the executing subject for phase 'Execute order' it is not necessary to send an E.message to the executing subject of the succeeding phase. In phase 'execute-orde' the subject 'ForwardingAgent-AO' starts also the process 'Execute-Transport' by sending the message 'E-Start-Execute-Process' to the subject 'Carrier-ET' which is a subject in process 'Execute Transport'.
 
 
 \begin{figure}[hbtp]
-	\includegraphics[scale=0.7]{Figures/Chapter5/Subject-Phase/SBD-ForwardingAGentAO_NEW.png}
+ \begin{center}
+	\includegraphics[width=0.9\textwidth]{Figures/Chapter5/Subject-Phase/SBD-ForwardingAGentAO_NEW.png}
 	\caption{SBD of subject 'Forwarding-Agent' in Process 'Accept Order'}
 	\label{fig:SBD-ForwardingAGentAO}
+	\end{center}
 \end{figure}
 
 
 Figure \ref{fig:CarrierAO} shows the behavior of subject 'Carrier-AO'. In process 'Accept Order' the subject 'Carrier-AO' only supports subject 'ForwardinAgent-AO' in phase 'Execute Order'. This means the subject 'Carrier-AO' receives a support request message 'S-Execute-Order?', excutes the support activities and send the result back to the subject 'ForwardingAgent-AO' by the message 'S-Execute Order!'.
 
 \begin{figure}[hbtp]
-	\includegraphics[scale=0.4]{Figures/Chapter5/Subject-Phase/CarrierAO_NEW.png}
+    \begin{center}
+        
+	\includegraphics[width=0.5\textwidth]{Figures/Chapter5/Subject-Phase/CarrierAO_NEW.png}
 	\caption{SBD of subject 'Carrier-AO' in Process 'Accept Order'}
 	\label{fig:CarrierAO}
+\end{center}
 \end{figure}
 
 Figure \ref{fig:SCD-ExecuteTransport} shows the SBD of process 'Execute Process' which is derived from the corresponding S-PM (see \ref{fig:S-PM-Execute-Trans}). The mechanism for getting the communication structure is the same as shown with process 'Accept Order'. The external subject 'ForwardingAgent-AO' represents the starting subject in process 'Accept-Order'.
 
 
 \begin{figure}[hbtp]
-	\includegraphics[scale=0.4, angle=90]{Figures/Chapter5/Subject-Phase/SCD-ExecuteTransport_NEW.png}
+	\includegraphics[width=0.9\textwidth]{Figures/Chapter5/Subject-Phase/SCD-ExecuteTransport_NEW.png}
 	\caption{SID of Process 'Execute Transport'}
 	\label{fig:SCD-ExecuteTransport}
 \end{figure}
