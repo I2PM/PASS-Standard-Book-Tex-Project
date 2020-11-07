@@ -10,10 +10,10 @@ which allowed it to shorten various rules for a focus on their core semantics.
 Therefore all contents of this section are a non-normative introduction to the topic of formal execution semantics.
 
 There are some conceptional differences between the reference implementation and the OWL description.
-The End State is a distinguished state instead of a property of a Do State or Receive State.
+The EndState class is not supported, but instead a Terminate Function is used.
 Choice Segment Paths are always both mandatory to start and end, also they have to be started with the Modal Split Function and joined with the Modal Join Function.
 Furthermore the reference implementation supports advanced features that are not covered by the OWL description, for example the Mobility of Channels concept and CorrelationIDs.
-A complete comparision of the conceptual differences is given in~\ref{CoreASM-Reference-Implementation-Differences-OWL-Model}.
+A complete comparison of the conceptual differences is given in~\ref{CoreASM-Reference-Implementation-Differences-OWL-Model}.
 
 %simplifications for this chapter:
 %- no Observer support => no execution state, no state priorities => Cancel Function not required
@@ -26,13 +26,13 @@ A complete comparision of the conceptual differences is given in~\ref{CoreASM-Re
 \subsection{Architecture}
 
 The reference implementation is composed by three main components.
-The specification of the execution semantics is defined with Abstract State Machines (ASM) % TODO: ref Börger?
+The specification of the execution semantics is defined with Abstract State Machines (ASM)~\cite{book:ASM-2003}
 and written in the CoreASM dialect.
 The specification is interpreted by the CoreASM Engine,
-which is part of the open-source CoreASM Framework and written for the Java Virtual Machine. % TODO: ref?
+which is part of the open-source CoreASM Framework~\cite{Farahbod2011} and written for the Java Virtual Machine.
 The third component is a console application that is connected to the CoreASM Engine
 and enables an interactive abstract process evaluation.
-A detailed description of the architecture is given in~\ref{CoreASM-Reference-Implementation-Architecture}.
+A detailed description of the architecture is given in section~\ref{CoreASM-Reference-Implementation-Architecture}.
 
 
 \subsection{Foundation}
@@ -1119,15 +1119,15 @@ new Macro Instance.
 
 
 
-\subsection{End Function}
+\subsection{Terminate Function}
 
-The End Function is used to terminate the current Macro Instance and has no outgoing transitions.
-If the current Macro Instance is the Main Macro Instance the End Function terminates the Subject.
+The Terminate Function is used to terminate the current Macro Instance and has no outgoing transitions.
+If the current Macro Instance is the Main Macro Instance the Terminate Function terminates the Subject.
 
 
 \begin{listing}[htbp]
 \begin{minted}{lexer.py:CoreASMLexer -x}
-rule PerformEnd(MI, currentStateNumber) =
+rule PerformTerminate(MI, currentStateNumber) =
   let ch = channelFor(self),
      pID = processIDFor(self),
        s = currentStateNumber in
@@ -1159,21 +1159,23 @@ rule PerformEnd(MI, currentStateNumber) =
     RemoveState(MI, s, MI, s)
   }
 \end{minted}
-\caption{PerformEnd}
-\label{lst:shortasm:PerformEnd}
+\caption{PerformTerminate}
+\label{lst:shortasm:PerformTerminate}
 \end{listing}
 
 
-The \asminline{PerformEnd} rule calls the \asminline{AbortMacroInstance} rule
+The \asminline{PerformTerminate} rule calls the \asminline{AbortMacroInstance} rule
 until no other states are active in the current Macro Instance.
 
 If the current Macro Instance is the Main Macro Instance the Subject terminates.
 To do so the End Function resets all Variables of the Subject and terminates the
 ASM agent.
-Additionally, the \asminline{FinalizeInteraction} rule is called. ... % TODO
+Additionally, the \asminline{FinalizeInteraction} rule is called, which will
+block future subject starts, if there are remaining messages left in the Inputpool,
+which means, that the subject is \textit{non-proper} terminated.
 
-Otherwise,  the Macro Instance was created by a CallMacro Function and only the
-Variables of the current Macro Instance are reset. If the End Function has a
+Otherwise, the Macro Instance was created by a CallMacro Function and only the
+Variables of the current Macro Instance are reset. If the Terminate Function has a
 parameter, it is stored in the function \asminline{macroTerminationResult}, so
 that the CallMacro Function proceeds with the corresponding outgoing transition.
 If no parameter is given the value is just set to \asminline{true} to indicate a
