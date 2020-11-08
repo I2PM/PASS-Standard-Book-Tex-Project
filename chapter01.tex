@@ -35,7 +35,16 @@ Subjects communicate with each other by exchanging information in form of \texti
 
 During the execution of a (business) process, a subject sends messages to other subjects, expects messages from other subjects, and executes internal actions, such as calculating a price, storing an address, etc.. All these activities are done in sequences as no single processor or human can really multi-task. The possible sequence is defined in a subject's behavior specification. Subject-oriented process specifications are always embedded in a context. A context is defined by the business organization and the technology by which a business process\todo{Add glossary to the document} is executed.
 
-Subject-oriented system development integrates established theories and concepts. It has been inspired by various process algebras (see e.g. [2], [3], [4]), by the basic structure of nearly all natural languages (Subject, Predicate, Object) and the systemic sociology developed by Niklas Luhmann (an introduction can be found in [5]). According to the organizational theory developed by Luhmann, the smallest organization consists of communication executed between at least two information processing entities[5]. 
+Subject-oriented system development has been inspired by various process algebras (see e.g. \cite{book:S-BPM}, \cite{book:CCS}, \cite{book:Pi-Calculus}, \cite{book:CSP} ), by the basic structure of nearly all natural languages (Subject, Predicate, Object) and the systemic sociology developed by Niklas Luhmann \cite{book:LuhmannLeicht},\cite{book:Luhmann}  and J\"urgen Habermas \cite{book:HabermasLeicht}, \cite{book:Habermas}. In the active voice of many natural languages a complete sentence consists of the basic components subject, predicate and objects. The subject represents the active element, the predicate the action and the object is the entity on which the action is executed. According to the organizational theory developed by Luhmann and Habermas the smallest organization consists of communication executed between at least two information processing entities (Note, this is a definition by a sociologist, not by a computer scientist) \cite{book:Luhmann}. Figure \ref{fig4} summarizes the different inspirations of subject orientation. The enhancements, such as the graphical notation, constitute the subject oriented approach and will be detailed in the following sections.
+
+\begin{figure} [ph!]
+	\centering
+	\includegraphics [width=1.0\linewidth]{Figures/fundamentals.png} 
+	\caption{Fundamentals of Subject Orientation}
+	\label{fig4}
+\end{figure}
+
+Particularly we describe how these various ingredients are combined in an orthogonal way to a modeling language for scenarios in which active entities have a certain importance. This language is called Parallel Activity Specification Schema (PASS).\\
 
 \subsection{Subject-Orientation}
 
@@ -126,7 +135,7 @@ Figure \ref{fig:subjectobject} displays how subjects and objects are connected i
 
 Modeling wise, internal functions in a subject can be described as the (passive) methods of a specific data-object or as function calls implemented in a service, if a service-oriented architecture is available.
 
-The functions of send and receive states are assumed to always have an additional method that transfer data between messages and internal data store of a subject. If a message is sent, the method writes data values into to the sent message, and if a message is received the corresponding method is used to copy the received data into the subject's data store [22]. In other words, subject either use synchronous services as an implementation of functions, or asynchronous services that are implemented through other subjects or even through complex processes consisting of multiple subjects themselves. Consequently, the concept Service Oriented Architecture (SOA) is complementary to S-BPM: Subjects are the entities which use the services offered by SOAs (cf. [25]).
+The functions of send and receive states are assumed to always have an additional method that transfer data between messages and internal data store of a subject. If a message is sent, the method writes data values into to the sent message, and if a message is received the corresponding method is used to copy the received data into the subject's data store. In other words, subject either use synchronous services as an implementation of functions, or asynchronous services that are implemented through other subjects or even through complex processes consisting of multiple subjects themselves. Consequently, the concept Service Oriented Architecture (SOA) is complementary to S-BPM: Subjects are the entities which use the services offered by SOAs.
 
 \section{Introduction to Ontologies and OWL }
 \label{IntroOntology}
