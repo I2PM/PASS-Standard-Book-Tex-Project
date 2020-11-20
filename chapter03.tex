@@ -1,5 +1,44 @@
 \chapter{Execution of a PASS Model}
 \label{PASSExec}
 
+\section{Subjects and Subject carrier}
+\label{sec:subjectCarrier} 
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=0.5\linewidth]{Figures/SubjectCarrierConcept1.png}
+	\caption[Concept of one Subject Carrier(processor) responsible for multiple Subjects in different process, each with its individual inbox (\cite{elstermann:diss})]{Concept of one Subject Carrier(processor) responsible for multiple Subjects in different process, each with its individual inbox(\cite{elstermann:diss})}
+	\label{fig:subjectCarrierConcept1}
+\end{figure*}
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=0.5\linewidth]{Figures/SubjectCarrierConcept2.png}
+	\caption[Concept of multipe Subject Carriers (processors) that can alternate in the the execution of on subject instance in a process (\cite{elstermann:diss})]{Concept of multipe Subject Carriers (processors) that can alternate in the the execution of on subject instance in a process (\cite{elstermann:diss})}
+	\label{fig:subjectCarrierConcept2}
+\end{figure*}
+
+\subsection{Choice Segment Execution}
+\label{sec:choiceSegmentExecution}
+
+- Subjects can not be in more than one state at the same time
+- It could be argued that the Choice Segment is somewhat contradicting this statement
+- It is not
+- simple interpretation: choice segment simply a short cut and better, more compact variant to modeling a multitude of possible paths as is shown in figure \ref{fig:choiceSegmentExecutionInterpretation}
+- somewhat more complex execution concept: it is possible to alternate the execution of states (including their internal functions)
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=0.5\linewidth]{Figures/Ontology/SubjectBehavior/ChoiceSegmentInterpretation.png}
+	\caption[Execution Interpretation of a Choice Segment]{Execution Interpretation of a Choice Segment}
+	\label{fig:choiceSegmentExecutionInterpretation}
+\end{figure*}
+
+The individual actions in the alternative paths of an alternative clause may be arbitrarily executed in parallel and overlapping (CS: interleving?), or in other words: A step can be executed in an alternative sequence, and then be followed by an action in any other sequence. This gives the performer of a subject the appropriate freedom of choice while executing his actions.
+
+In the example, the order can thus first be updated, and then the message 'order arrived' sent to sales. Now, either the message 'deliver order' can be sent to the warehouse or one of the internal functions, 'update sales status' or 'collect data for statistics', can be executed.
+
+The left alternative must be executed completely, and the middle alternative must also have been completed, if the first action ('inform sales' in the example) is executed. Only the left alternative can be processed because the middle one was never started. Alternatively, the sequence in the middle may have already reached its endpoint, while the left is not yet complete. In this case, the process waits until the left one has reached its endpoint. Only then will the state 'confirmation' be reached in the alternative clause. The right branch neither needs to be started, nor to be completed. It is therefore irrelevant for the completion of the alternative construct.
+
 \input{chapter03a}
 \input{chapter03b}

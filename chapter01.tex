@@ -3,8 +3,7 @@
 \chapter{Overview}
 
 %\todo[inline]{
-%Review CS: Chapter One should be a motivation including history of developements, \newline rationale and target reader groups (sntadarization bodies, developers, practitioners, researchers).
-%\newline
+%Review CS: Chapter One should be a motivation including history of developements, \newline rationale and target reader groups (sntadarization bodies, developers, practitioners, researchers).  
 %AF: See preface\\
 %CS: Hochkommas und Bindestriche im pdf nicht alle lesbar, oft mt Umlauten gedruckt!
 %}
@@ -29,11 +28,13 @@ However, it is the first part of the second meaning that subject-orientation as 
 
 \subsection{Subject-driven Business Processes}
 
-In principle, subjects are the active entities in a specific process context that posses a behavior. A specification of a subject does not say anything about the technology used to execute the described behavior. This is different to other approaches, such as multi-agent systems, that usually imply a technical/software solution consisting of executable source code.
+In principle, subjects are the active entities in a specific process context and have a specific behavior. A specification of a subject does not say anything about the technology used to execute the described behavior. This is different to other approaches, such as multi-agent systems, that usually imply a technical/software solution consisting of executable source code.
 
 Subjects communicate with each other by exchanging information in form of \textit{messages}. Messages have a name and a payload. The name should express the topic or content of a message informally. The payload is the data (business objects) transported. 
 
-During the execution of a (business) process, a subject sends messages to other subjects, expects messages from other subjects, and executes internal actions, such as calculating a price, storing an address, etc.. All these activities are done in sequences as no single processor or human can really multi-task. The possible sequence is defined in a subject's behavior specification. Subject-oriented process specifications are always embedded in a context. A context is defined by the business organization and the technology by which a business process\todo{Add glossary to the document} is executed.
+During the execution of a (business) process, a subject sends messages to other subjects, expects messages from other subjects, and executes internal actions, such as calculating a price, storing an address, etc.. All these activities are done in sequences as no single processor or human can really multi-task. The possible sequence is defined in a subject's behavior specification. Subject-oriented process specifications are always embedded in a context. A context is defined by the business organization and the technology by which a business process
+
+%\todo{Add glossary to the document} is executed.
 
 Subject-oriented system development has been inspired by various process algebras (see e.g. \cite{book:S-BPM}, \cite{book:CCS}, \cite{book:Pi-Calculus}, \cite{book:CSP} ), by the basic structure of nearly all natural languages (Subject, Predicate, Object) and the systemic sociology developed by Niklas Luhmann \cite{book:LuhmannLeicht},\cite{book:Luhmann}  and J\"urgen Habermas \cite{book:HabermasLeicht}, \cite{book:Habermas}. In the active voice of many natural languages a complete sentence consists of the basic components subject, predicate and objects. The subject represents the active element, the predicate the action and the object is the entity on which the action is executed. According to the organizational theory developed by Luhmann and Habermas the smallest organization consists of communication executed between at least two information processing entities (Note, this is a definition by a sociologist, not by a computer scientist) \cite{book:Luhmann}. Figure \ref{fig4} summarizes the different inspirations of subject orientation. The enhancements, such as the graphical notation, constitute the subject oriented approach and will be detailed in the following sections.
 
@@ -63,7 +64,7 @@ We introduce the basic concepts of subject-oriented process modeling with a simp
 %\strictpagecheck
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectExecution/OrderComStructure}
+	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectBehavior/OrderComStructure}
 	\caption[The Communication Structure of a simple Order Process]{The Communication Structure of a simple Order Process}
 	\label{fig:ordercomstructure1}
 \end{figure}
@@ -80,7 +81,7 @@ Figure \ref{fig:ordercustomerorderhandling} depicts the behavior of the subjects
 %\strictpagecheck
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.9\linewidth]{Figures/Ontology/SubjectExecution/OrderCustomerOrderHandling}
+	\includegraphics[width=0.9\linewidth]{Figures/Ontology/SubjectBehavior/OrderCustomerOrderHandling}
 	\caption[The Behaviors of the Subjects from \ref{fig:ordercomstructure1} ]{The Behaviors of the Subjects from \ref{fig:ordercomstructure1}}
 	\label{fig:ordercustomerorderhandling}
 \end{figure}
@@ -98,7 +99,7 @@ In summary, the behavior of each subject describes in which order it sends and r
 %%\strictpagecheck
 %\begin{figure}[htbp]
 %	\centering
-%	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectExecution/OrderComStructure}
+%	\includegraphics[width=0.7\linewidth]{Figures/Ontology/SubjectBehavior/OrderComStructure}
 %	\caption[The Communication Structure with Change Message]{The Communication Structure with Change Message}
 %	\label{fig:ordercomstructure2}
 %\end{figure}
@@ -108,7 +109,7 @@ In summary, the behavior of each subject describes in which order it sends and r
 %\strictpagecheck
 %\begin{figure}[htbp]
 %	\centering
-%	\includegraphics[width=0.9\linewidth]{Figures/Ontology/SubjectExecution/OrderCustomerChange}
+%	\includegraphics[width=0.9\linewidth]{Figures/Ontology/SubjectBehavior/OrderCustomerChange}
 %	\caption[Customer is allowed to Change Orders]{Customer is allowed to Change Orders}
 %	\label{fig:ordercustomerchange}
 %\end{figure}
@@ -118,7 +119,7 @@ In summary, the behavior of each subject describes in which order it sends and r
 \subsection{Subjects and Data}
 \label{SUbjects-Objects}
 
-Up to now, we did not explicitly mention data or rather the concept of data, even though they are necessary to get complete sentences comprising subject, predicate (verbs), and object. In subject-orientation (data-)objects have their place\footnote{Theoretically, the means subject-oriented modeling and object-oriented modeling are 100\% compatible In regards to natural languages it must be understood that pure object-oriented means are akin the passive sentence structures where the subject may be omitted, while subject-oriented descriptions follow the structure of active sentences, that are much easier to understand. }
+Up to now, we did not explicitly mention data or rather the concept of data, even though they are necessary to get complete sentences comprising subject, predicate (verbs), and object. In subject-orientation (data-)objects have their place\footnote{Theoretically, the means subject-oriented modeling and object-oriented modeling are 100\% compatible. In regards to natural languages it must be understood that pure object-oriented means are akin the passive sentence structures where the subject may be omitted, while subject-oriented descriptions follow the structure of active sentences, that are much easier to understand.}
 
 
 It is assumed that each subject posses an individual "database" to allow to store objects of arbitrary complexity. Similarly, messages may have a data \textit{payload} representing the transport of data between subjects.
@@ -127,7 +128,7 @@ Figure \ref{fig:subjectobject} displays how subjects and objects are connected i
 %\strictpagecheck
 \begin{figure}[htbp]
 	\centering
-	\includegraphics[width=0.9\linewidth]{Figures/Ontology/SubjectExecution/SUbjectObject}
+	\includegraphics[width=0.9\linewidth]{Figures/Ontology/SubjectBehavior/SUbjectObject}
 	\caption[Subjects and (Data-)Objects]{Subjects and (Data-)Objects}
 	\label{fig:subjectobject}
 \end{figure}
