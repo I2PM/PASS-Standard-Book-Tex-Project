@@ -1,5 +1,5 @@
-% Review Christian Stary January 2020
-\section{ASM Definition of Subject Execution}
+\section{Formal ASM Definition of Subject Execution}
+\label{sec:PASSExec}
 
 \setminted{fontsize=\small}
 \setmintedinline{fontsize=\normalsize,breaklines}
@@ -10,7 +10,7 @@ which allowed it to shorten various rules for a focus on their core semantics.
 Therefore all contents of this section are a non-normative introduction to the topic of formal execution semantics.
 
 There are some conceptional differences between the reference implementation and the OWL description.
-The EndState class is not supported, but instead a Terminate Function is used.
+The End State class is not supported, but instead a Terminate Function is used.
 Choice Segment Paths are always both mandatory to start and end, also they have to be started with the Modal Split Function and joined with the Modal Join Function.
 Furthermore the reference implementation supports advanced features that are not covered by the OWL description, for example the Mobility of Channels concept and CorrelationIDs.
 A complete comparison of the conceptual differences is given in~\ref{CoreASM-Reference-Implementation-Differences-OWL-Model}.

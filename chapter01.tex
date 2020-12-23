@@ -122,7 +122,7 @@ In summary, the behavior of each subject describes in which order it sends and r
 Up to now, we did not explicitly mention data or rather the concept of data, even though they are necessary to get complete sentences comprising subject, predicate (verbs), and object. In subject-orientation (data-)objects have their place\footnote{Theoretically, the means subject-oriented modeling and object-oriented modeling are 100\% compatible. In regards to natural languages it must be understood that pure object-oriented means are akin the passive sentence structures where the subject may be omitted, while subject-oriented descriptions follow the structure of active sentences, that are much easier to understand.}
 
 
-It is assumed that each subject posses an individual "database" to allow to store objects of arbitrary complexity. Similarly, messages may have a data \textit{payload} representing the transport of data between subjects.
+It is assumed that each subject posses an individual "database" to allow to store objects of arbitrary complexity. Similarly, messages may have a data \textit{Payload} representing the transport of data between subjects.
 Figure \ref{fig:subjectobject} displays how subjects and objects are connected in the classical way. The internal function  "prepare order" uses or manipulates internal data to prepare the data for the order message. This order data object is sent as the \textit{payload} of the message "order".
 
 %\strictpagecheck
@@ -134,14 +134,16 @@ Figure \ref{fig:subjectobject} displays how subjects and objects are connected i
 \end{figure}
 
 
-Modeling wise, internal functions in a subject can be described as the (passive) methods of a specific data-object or as function calls implemented in a service, if a service-oriented architecture is available.
+Modeling wise, internal functions in a subject can be described to be executing the (passive) methods of a specific data-object or as function calls implemented in a service, if a service-oriented architecture is available.
 
 The functions of send and receive states are assumed to always have an additional method that transfer data between messages and internal data store of a subject. If a message is sent, the method writes data values into to the sent message, and if a message is received the corresponding method is used to copy the received data into the subject's data store. In other words, subject either use synchronous services as an implementation of functions, or asynchronous services that are implemented through other subjects or even through complex processes consisting of multiple subjects themselves. Consequently, the concept Service Oriented Architecture (SOA) is complementary to S-BPM: Subjects are the entities which use the services offered by SOAs.
+
+More on data modeling in the context of subject-orientation can be found in Section \ref{sec:PassAndData}.
 
 \section{Introduction to Ontologies and OWL }
 \label{IntroOntology}
 
-This short introduction to ontology, the Resource Description Framework (RDF), and the Web Ontology Language (OWL) will help to get an understanding of their usage as definition technologies for Subject-Oriented Modeling and Implementation standard in the form of the PASS ontology that is outlined in sections \ref{PASSStruct} and \ref{PASSExec}.
+This short introduction to ontology, the Resource Description Framework (RDF), and the Web Ontology Language (OWL) will help to get an understanding of their usage as definition technologies for Subject-Oriented Modeling and Implementation standard in the form of the PASS ontology that is outlined in sections \ref{sec:PASSStruct} and \ref{sec:PASSExec}.
 
 Ontologies are a formal collections of knowledge or descriptions about the world. They are being used to structure the knowledge of  various domains using taxonomies and classification networks. They often use structures similar to human languages, where nouns in statement-sentences represent objects or classes of objects and the verbs represents relations between the objects of classes. (e.g. \textit{"PASS" "is-a" "process modeling language"})
 
@@ -166,7 +168,7 @@ For describing ontologies several formal languages have been developed. One wide
 
 OWL introduces and allows to use the modeling mechanisms of classes, properties, and instances. Classes represent terms also called concepts. Classes have properties and instances are individuals of one or more class.
 
-A class is a type of thing. A type of "resource" in the RDF sense can be a person, place, object, concept, event, etc.. Classes and subclasses form a hierarchical taxonomy and members of a subclass inherit the characteristics of their parent class (superclass). Everything true for the parent class is also true for the subclass. A member of a subclass "is a", or "is a kind of" its parent class.
+A class is a type of thing. A type of "resource" in the RDF sense can be a person, place, object, concept, event, etc.. Classes and subclasses form a hierarchical taxonomy and members of a subclass inherit the characteristics of their parent class (super class). Everything true for the parent class is also true for the subclass. A member of a subclass "is a", or "is a kind of" its parent class.
 
 OWL Ontologies define a set of properties used in a specific knowledge domain. In an ontology context, properties relate members of one class to members of another class or a literal.
 
@@ -198,7 +200,7 @@ Entities belonging to a certain class are instances of this class or individuals
 
 \section{Introduction to Abstract State Machines}
 
-Where the OWL/RDF ontology concepts will be used to define the static structure of subject-oriented process models. The execution semantics will be specified using the concept of \textit{Abstract State Machines}. This section will give a short introduction into this topic in order to help the understanding of their usage in section \ref{PASSExec}.
+Where the OWL/RDF ontology concepts will be used to define the static structure of subject-oriented process models. The execution semantics will be specified using the concept of \textit{Abstract State Machines}. This section will give a short introduction into this topic in order to help the understanding of their usage in section \ref{sec:PASSExec}.
 
 An abstract state machine (ASM) is a state machine\footnote{State Machines and therefore also abstract state machines are both formal description concepts in theoretical computer science used to describe or define the execution order of a system - e.g. a software program} operating on states that are arbitrary data structures (structure in the sense of mathematical logic, that is a nonempty set together with several functions (operations) and relations over the set). In simpler terms, where in standard state machines the states are explicitly defined (e.g. \textit{state01}, \textit{state02}), in an ASM the states or only implicitly or abstractly defined (e.g. \textit{"a state where a data value is x"}).
 

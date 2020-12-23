@@ -1,8 +1,11 @@
-\chapter{The Structure of a PASS Process Models}
-\label{PASSStruct}
+\chapter{Informal Descriptions of PASS}
+\label{sec:PASSStruct}
 
-This chapter, contains specification of the graphical, subject-oriented process modeling language Parallel Activity Specification Schema (PASS). First in an informal manner intended for introduction of terms and concepts of PASS. And in the later section introduces the formal definition of an digital exchange standard of PASS models based on the semantic-web technologies that are the Resource Description Framework (RDF) and the Web Ontology Language (OWL). 
+This chapter explains the principle ideas of the structure  and subsequent execution of the graphical, subject-oriented process modeling language that is the Parallel Activity Specification Schema (PASS). It is intended for people unfamiliar with PASS as an introduction to the most important terms and concepts of PASS.
 
+First the principle Structure of PASS and it's two diagram types are introduced in sections \ref{sec:subjectInteraction} and \ref{sec:subjectBehavior}. Afterwards the idea of executing PASS is detailed in section \ref{sec:informalExecution}.
+
+The formal definitions of PASS's structure and its execution are following in the next chapter (Chapter \ref{sec:FormalDefintions}).
 %Note: Standard PASS
 
 \section{Principle Structure}
@@ -11,7 +14,7 @@ In contrast to classic process description means, PASS process models do not con
 
 Each model consist of a \textbf{Subject Interaction Diagram (SID)} that defines the \textit{Subjects} in a process or process system and their principle interaction means in the form of messages.
 
-The second diagram type of PASS are the \textbf{Subject Behavior Diagrams (SBD)} that should exist at least once for every fully specified standard subject in an SID. Next to main or \textit{base behavior} diagram, a subject may be associated with other, specialized behavior diagrams.
+The second diagram type of PASS are the \textbf{Subject Behavior Diagrams (SBD)}, or \PASSModelElement{Subject Behavior} for short, that should exist at least once for every standard \PASSModelElement{Fully Specified Subject} in an SID. Next to main or \PASSModelElement{Subject Base Behavior} diagram, a subject may be associated with other, specialized behavior diagrams (See Section \ref{sec:multipleBehaviors}).
 
 There is a one-to-many (1:n) relationship between SID and \textit{its} SBDs. In a coherent PASS model, the content of the SBDs must follow the specifications of the SID.
 
@@ -22,6 +25,6 @@ The principle idea and elements of both diagrams are described in the following 
 %%%The Further Sections are included in Chaper 02a 02b
 \input{chapter02aSubjectInteraction}
 \input{chapter02bSubjectBehaviors}
-\input{chapter02cFormalModelStructureSpec}
-
-\section{Variants of Visualizations of PASS}
+\input{chapter02cPASSandDataModeling}
+\input{chapter02DInformaExecutionConcept}
+\input{chapter02eVariousVisualisationsOfPASS}
