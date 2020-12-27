@@ -165,6 +165,106 @@ The more complex interpretation of the execution of the Choice Segment does allo
 \PASSDefaultIndividual{DefaultFunctionReceive2\_AutoReceiveEarliest}
 \PASSDefaultIndividual{DefaultFunctionSend}
 
+
+\subsection{Substitutions for Specialized PASS Transition Execution}
+
+In the PASS standard, there are several specialized Transitions. For their execution, they could be interpreted or substituted in the following ways with the standard elements. 
+
+Note that all of these are possible technical substitutions that should allow a standard interpreter to handle these transitions. However, an actual workflow execution engine can implement these elements also in other ways.
+
+\subsubsection{User Cancel Transitions},
+
+To interpret and correctly execute, \PASSModelElement{UserCancelTransition}s, the existence of User or Subject Carrier in an execution software must be assumed. Equally, a technical solution to communicated with this user must be assumed. Consequently, each User-Cancel transition could be substitute as is shown in Figure \ref{fig:usercancelSubstitution}. An additional interface subject needs to be added that connects to an implementation that in turn allows interaction with the user beyond the process flow. 
+
+
+\begin{figure*}[hp]
+	\centering
+	\includegraphics[width=1.0\linewidth]{Figures/Ontology/UserCancelInterpretationSIDSBD.png}
+	\caption[Possible Substitution of a \PASSModelElement{UserCancelTransition} for execution]{Possible Substitution of a \PASSModelElement{UserCancelTransition} for execution}
+	\label{fig:usercancelSubstitution}
+\end{figure*}
+
+Note that this substitution is for User Cancel Transitions originating from Receive States. User Cancel transitions originating from Do States can simply bee seen as relatively specialized Do Transition that allows a user to arbitrarily set the execution of s State Function to be \textit{done}. User Cancels for Send States would need to be substituted similar to a Sending Failed Transition but with the User interacting directly with the Send Controller and deeming a Send activity to be failed.  
+
+\subsubsection{Sending Failed Transitions}
+\label{sec:sendingFailedTransitionsExecution}
+
+To interpret \PASSModelElement{Sending Failed Transition}s it is necessary to assume the existence of a technical entity that controls a subject's send activities during execution; the \textit{Send Controller}. After have been given the command to forward a message to a specific subject instance, the send controller does inform a Subject's Behavior Interpreter about a the possible success or failure (after a timeout) and the subject reacts accordingly as depicted in Figure \ref{fig:sendingfailedSubstituion}.
+
+
+\begin{figure*}[hp]
+	\centering
+	\includegraphics[width=1.0\linewidth]{Figures/Ontology/SendingFailedInterpretationSIDSBD.png}
+	\caption[Possible Substitution of a \PASSModelElement{SendingFailedTransition} for execution]{Possible Substitution of a \PASSModelElement{SendingFailedTransition} for execution}
+	\label{fig:sendingfailedSubstituion}
+\end{figure*}
+
+\subsubsection{Timer Transitions}
+
+There are the two general types of time based transitions:
+
+Substitution  \PASSModelElement{Timer Transition}s and \PASSModelElement{Reminder Transition}. Both work a little different from each other and also different when originating from each of the different state types.
+
+If the execution envoironment is able to handle it, \PASSModelElement{Timer Transition}, also known as \textit{Time-Outs}, can be executed by adding an accordingt time-out funcionallity to a State's internal function.
+
+Otherwise, certain substitutions could be done in order to realizer the execution of Time Transitions. All of them have in common that they require the assumed existence of a timer or calendar subjects that theoretical handles all time calculations and sends an according trigger message when the time has come.
+
+\emph{Timer from Receiver States}
+
+The substitution done for Timer Transitions originating from Receive States. Here, before entering a state with an outgoing timer transition, the according time-out time from that transition needs to be set/send to the timer and the timer transition itself can be substituted simply by another receive transition from that state. If the state can be visited multiple times, the timer will also need to be deactivated. Otherwise, the according time-out message might still be sent and in the subject's inbox when reentering the state.
+
+\begin{figure*}[hp]
+	\centering
+	\includegraphics[width=1.0\linewidth]{Figures/Ontology/TimeOutReceiveStateInterpretationSIDSBD.png}
+	\caption[Possible Substitution of \PASSModelElement{TimeOutTransiton}s from \PASSModelElement{Receive State}s for execution]{Possible Substitution of \PASSModelElement{TimeOutTransiton}s from \PASSModelElement{Receive State}s for execution}
+	\label{fig:timeOutReceivesubstitution}
+\end{figure*}
+
+\emph{Timer from Send States}
+
+Instead of setting a time with an assumed timer subject, a time-out transition originating from a send state is equal to a Sending Failed Transition with a modified time-out-time that is different from an execution environments default value. The Send Controller (see Section \ref{sec:sendingFailedTransitionsExecution}/ Figure \ref{fig:sendingfailedSubstituion}) simply needs to be informed about that specialized time-out time and send replies accordingly. 
+
+\begin{figure*}[hp]
+	\centering
+	\includegraphics[width=1.0\linewidth]{Figures/Ontology/TimeOutSendStateInterpretationSBD.png}
+	\caption[Possible Substitution of \PASSModelElement{TimeOutTransiton}s from \PASSModelElement{Send State}s for execution]{Possible Substitution of \PASSModelElement{TimeOutTransiton}s from \PASSModelElement{Send State}s for execution}
+	\label{fig:timeOutSendSubstitution}
+\end{figure*}
+
+\emph{Timer from Do States}
+
+Realizing time-outs for Do States is more complex. It could be done via a modification to that states internal Function Specification to include an additional internal time-out concept and substituting the outgoing Timer Transition with normal Do Transition that has the Transition Condition of  "time is up". 
+
+A more complex substitution is shown in Figure \ref{fig:timeOutDoSubstitution}. Here, the concept of a Guard or Interrupt Behavior is employed, that guards only the single state that had the original time-out transition going out of it. The guard is triggered by a time-out message from a timer subject that needs to be set before entering the guarded state.
+
+\begin{figure*}[hp]
+	\centering
+	\includegraphics[width=1.0\linewidth]{Figures/Ontology/TimeOutDoStateInterpretationSBD.png}
+	\caption[Possible Substitution of \PASSModelElement{TimeOutTransiton}s from \PASSModelElement{Do State}s for execution]{Possible Substitution of \PASSModelElement{TimeOutTransiton}s from \PASSModelElement{Do State}s for execution}
+	\label{fig:timeOutDoSubstitution}
+\end{figure*}
+
+\subsubsection{Reminder Transitions}
+
+Reminder Transitions are different from time-outs, as they are not triggered upon the passing of a specific amount of time after entering the state but rather, in terms of time since the transition has been traveled last or upon the passing of an calendar time interval.
+
+Naturally, they are used only in States that will be (re-)visited multiple times and only \PASSModelElement{Receive States} and \PASSModelElement{Do States} are valid source states for these transitions.
+
+Substitution is similar to that of Timer Transitions.  Again a Timer or Calendar Subject is assumed to exist, that is able to handle time based event calculation and send the according reminder messages upon reaching the time based conditions. Also, that timer needs to be set before entering the original source state for the first time. In contrast to a timer, the reminder message is send immediately so that transition could be traversed. In order to be able to send the next reminder correctly (be it 4 weeks or 4 seconds) the time must be informed if said transition has been followed as is shown in Figure \ref{fig:reminderReceiveSubstitution}. 
+
+
+\begin{figure*}[hp]
+	\centering
+	\includegraphics[width=1.0\linewidth]{Figures/Ontology/ReminderTransitionReceiveStateInterpretationSBD.png}
+	\caption[Possible Substitution of \PASSModelElement{Reminder Transition}s from \PASSModelElement{Receive State}s for execution]{Possible Substitution of \PASSModelElement{Reminder Transition}s from \PASSModelElement{Receive State}s for execution}
+	\label{fig:reminderReceiveSubstitution}
+\end{figure*}
+
+To keep the the number of reminder messages under Control an additional \PASSModelElement{Input Pool Restrictions} for that limits the number of reminder messages from that Timer Subject to one is useful, together with the \PASSDefaultIndividual{Input Pool Constraint Handling Strategy [of] Delete Oldest} for that message.
+
+
+
+
 %The individual actions in the alternative paths of an alternative clause may be arbitrarily executed in parallel and overlapping (CS: interleving?), or in other words: A step can be executed in an alternative sequence, and then be followed by an action in any other sequence. This gives the performer of a subject the appropriate freedom of choice while executing his actions.
 
 %In the example, the order can thus first be updated, and then the message 'order arrived' sent to sales. Now, either the message 'deliver order' can be sent to the warehouse or one of the internal functions, 'update sales status' or 'collect data for statistics', can be executed.

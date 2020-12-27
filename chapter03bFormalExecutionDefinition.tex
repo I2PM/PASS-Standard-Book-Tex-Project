@@ -4,15 +4,27 @@
 \setminted{fontsize=\small}
 \setmintedinline{fontsize=\normalsize,breaklines}
 
-This section provides a commented overview of the CoreASM PASS Reference Implementation provided in Appendix~\ref{CoreASM-Reference-Implementation}.
-Only a reduced set of language elements are shown here, advanced Functions and implementation details are left out,
-which allowed it to shorten various rules for a focus on their core semantics.
-Therefore all contents of this section are a non-normative introduction to the topic of formal execution semantics.
+\subsection{Introduction}
 
-There are some conceptional differences between the reference implementation and the OWL description.
-The End State class is not supported, but instead a Terminate Function is used.
-Choice Segment Paths are always both mandatory to start and end, also they have to be started with the Modal Split Function and joined with the Modal Join Function.
-Furthermore the reference implementation supports advanced features that are not covered by the OWL description, for example the Mobility of Channels concept and CorrelationIDs.
+While the the correct structure and syntax of Parallel Activity Specification Schema (PASS) Process Models is specified in the Web Ontology Language (OWL), its execution semantics are defined using the formalism of Abstract State Machines ASM as defined by Börger in \cite{book:ASM-2003} and introduced in Section \ref{sec:introASM}.
+
+The original PASS ASM execution specification was formulated in \cite{boerger2011interpreter} in 2011, but is now somewhat outdated in terms of PASS model elements covered in the specification as well as the used vocabulary. 
+
+While not yet covering all PASS elements, the current version of PASS execution is based on \cite{article:PASS-ASM} and \cite{article:PASS-CoreASM}. This version is not a pure ASM specification, but rather a specification meant for \textit{CoreASM}, an open-source ASM execution engine/software implemented for the JAVA Virtual Machine (JVM)\cite{Farahbod2011}. Thereby, it is basically an execution specification as well as a reference implementation at the same time\footnote{Next actual ASM spec and the CoreASM framework, the referential implementation is also complemented by a console application that is connected to the CoreASM Engine and enables an interactive abstract process evaluation. A detailed description of the architecture is given in section~\ref{CoreASM-Reference-Implementation-Architecture}.}.
+
+This section provides a commented overview over the CoreASM PASS Reference Implementation. Only a reduced set of language elements are shown. Advanced/sub functions and implementation details are left out, which allows to shorten various rules for a focus on their core semantics. Therefore all contents of this section are a non-normative introduction to the topic of formal execution semantics. The complete spec is provided in Appendix~\ref{CoreASM-Reference-Implementation}. 
+
+
+\subsection{Differences}
+
+Note that there are some conceptional differences between the reference implementation and the OWL description. Important differences are:
+
+\begin{itemize}
+    \item The End State concept is not supported, but instead a \textit{Terminate Function} is used.
+    \item Choice Segment Paths are always both mandatory to start and end. Also they have to be started with the \textit{Modal Split Function} and joined with the \textit{Modal Join Function}, which are not part of the OWL-Structure Standard Definition.
+    \item The reference implementation supports advanced features that are not covered by the OWL description, for example the Mobility of Channels concept and CorrelationIDs.
+\end{itemize}
+
 A complete comparison of the conceptual differences is given in~\ref{CoreASM-Reference-Implementation-Differences-OWL-Model}.
 
 %simplifications for this chapter:
@@ -23,32 +35,13 @@ A complete comparison of the conceptual differences is given in~\ref{CoreASM-Ref
 %- no KillBehavior (although recursive macros and reservation messages). therefore this will not be sound - but a bit less complicated
 
 
-\subsection{Architecture}
-
-The reference implementation is composed by three main components.
-The specification of the execution semantics is defined with Abstract State Machines (ASM)~\cite{book:ASM-2003}
-and written in the CoreASM dialect.
-The specification is interpreted by the CoreASM Engine,
-which is part of the open-source CoreASM Framework~\cite{Farahbod2011} and written for the Java Virtual Machine.
-The third component is a console application that is connected to the CoreASM Engine
-and enables an interactive abstract process evaluation.
-A detailed description of the architecture is given in section~\ref{CoreASM-Reference-Implementation-Architecture}.
-
-
 \subsection{Foundation}
 
-The specification makes use of asynchronous multi-agent Turbo ASMs, executing each Subject instance with one ASM-agent each.
-It supports the concurrent execution of multiple process models and multiple instances of each process model.
-Each instance has a unique \textit{ProcessInstanceID} (short: \asminline{PI}) assigned.
-Within a process instance multiple instances of a subject can occur (MultiSubject concept).
-Each subject instance has an agent assigned, to distinguish the subject instances.
-This agent is identified by it name.
-Therefore a subject instance is identified by the tuple (Process~Model~ID, Process~Instance~ID, Subject~ID, Agent~Name).
-This tuple is called \textit{Channel} (short: \asminline{ch}), as it used in the mobility of channels concept in order to support distributed communication patterns.
+The specification makes use of concepts of \textit{asynchronous multi-agent Turbo ASMs}, executing each Subject instance with one ASM-agent each. It supports the concurrent execution of multiple process models and multiple instances of each process model. 
+Each \textit{process instance} has a unique \textit{ProcessInstanceID} (short: \asminline{PI}) assigned. 
+Within a process instance multiple instances of a subject (\textit{Subject~ID}) can exist (Multi Subject concept). Each subject instance has an \textit{agent} assigned, in order to distinguish subject instances and to keep track of its current $"state"$\footnote{State is in the sense of which subject data is present, the content of the input pool queues and also the active SBD states}. The agent is identified by its name.
 
-In the interpreter, each subject instance has an ASM Agent assigned, that keeps track of its current state,
-where the meaning of state is in the sense of which subject data is present, the content of the input pool queues and also the active SBD states.
-This state is stored in ASM functions and assigned to the \textit{Channel}.
+Therefore a subject instance is identified by the tuple \textit{(Process~Model~ID, Process~Instance~ID, Subject~ID, Agent~Name)}. This tuple is called \textbf{Channel} (short: \asminline{ch}). The concept of Channel itsef is used in the \textit{"mobility of channels concept"} in order to support distributed communication patterns. The overall subject \textit{"state"} is stored in the following ASM functions and assigned to the \textit{Channel}.
 
 \begin{listing}[htbp]
 \begin{minted}{lexer.py:CoreASMLexer -x}
@@ -70,27 +63,17 @@ derived agentOf(ch)           = nth(ch, 4)
 \end{listing}
 
 In the function \asminline{channelFor} the assignment from the ASM Agents to their \textit{Channels} is stored.
-The derived functions are used to lookup certain tuple elements of the channel.\\
+The \textit{derived functions} are used to lookup certain tuple elements of the channel.\\
 
 % NOTE: StartProcess and StartASMAgent left out intentionally
 
 % Subject Data / Data Objects
 
-Analogous to programming languages Data Objects are called \textit{Variables}.
-Their scope is either bound to a Subject or a Macro Instance and can only be
-accessed by the Subject. Variables are identified by their name and have an
-explicit data type and a value.
+Analogous to programming languages, Data Objects are called \textit{Variables}.Their scope is either bound to a Subject or a Macro Instance and can only be accessed by the Subject. Variables are identified by their name and have an explicit data type and a value.
 
-Variables are stored in the \asminline{variable} function which maps from
-the Subject's Channel, the scoped Macro Instance~ID and the Variable's name to
-a pair of the data type and value. For Variables that are not scoped to a Macro
-Instance, and are therefore accessible for any state in any Macro Instance of
-the Subject, the unused Macro Instance~ID~0 is used.
+Variables are stored in the \asminline{variable} "function" which maps the triple of the Subject's Channel (a list), the scoped Macro Instance~ID (a Number) and the Variable's name (a String) to a pair of the data type and value (another List). For Variables that are not scoped to a Macro Instance, and are therefore accessible for any state in any Macro Instance of the Subject, the general Macro Instance~ID~$0$ is used.
 
-The function \asminline{variableDefined} is used to keep track of Variables
-that are in use, so that their content can be reset upon the termination of a
-Macro Instance or the Subject, respectively.
-
+The function \asminline{variableDefined} is used to keep track of Variables that are in use, so that their content can be reset upon the termination of a Macro Instance or the Subject, respectively.
 
 \begin{listing}[htbp]
 \begin{minted}{lexer.py:CoreASMLexer -x}
@@ -105,37 +88,22 @@ function variableDefined : LIST -> SET
 \end{listing}
 
 
-
-
-\subsection{Interaction Definitions}\label{sec:InteractionDefinitions}
-
-The interaction between Subjects is implemented as asynchronous Message exchange.
-Messages are placed into the Inputpool of the receiver where they are then retrieved from when the receiver is in a Receive state.
-
-
 \subsubsection{Messages}\label{sec:messages}
 
-The message content consists of the actual payload and its data type. As the
-reference implementation is intended only for an abstract process execution
-the payload / business objects are abstracted to be just a text given as string.
+A Message consists of the actual payload and its data type. As the reference implementation is intended only for an abstract process execution the payload / business objects are abstracted to be just a text given as string.
 
-For the communication with MultiSubjects, i.e. sending the same Message to
-multiple Agents of one Subject, the \textit{all-or-none} strategy is used. This
-is accomplished by separating the sending of a Message into two phases: first
-a reservation Message is placed at each receiver into the input pool.
-Only after all reservations could be placed they are then replaced with the
-actual Message.
+\subsection{Interaction Definitions}
+\label{sec:InteractionDefinitions}
+
+The interaction between Subject Instances is implemented as asynchronous message exchange. Messages are placed into the \textit{Inputpool} of the receiver where they are retrieved from when the receiver is in a Receive State.
+
+For the communication with MultiSubjects, i.e. sending the same message to multiple instances/agents of one Subject, a \textit{all-or-none} strategy is used. This is accomplished by separating the sending of a Message into two phases: first a reservation Message is placed at each receiver into the input pool. Only when all reservations can be placed, they are afterwards replaced with the actual message.
+
+
 
 \subsubsection{Inputpool}\label{sec:Inputpool}
 
-The Inputpool is structured into multiple FIFO queues per Subject~ID of the sender, the Messagetype and the CorrelationID.
-
-The Inputpool can be limited to allow a maximum number of Messages and
-reservations per sender Subject~ID and Messagetype; in case the Inputpool Limit is
-reached no additional reservation can be placed. To support the proper
-termination of a Subject a specific queue (and also the complete Inputpool)
-can be closed, in which case no additional reservation can be placed into it,
-too.
+The Inputpool of a subject instance is structured into multiple FIFO queues, distinguished by Subject~ID of the sender, the Messagetype and the CorrelationID. This way all Inputpool Restriction Types can be realized, be it by general maximum number of Messages or discrimination according to sender Subject~ID and Messagetype; in case the Inputpool limit is reached no additional reservation can be placed. Similarily, in order to realize the proper termination of a Subject Instance, a specific queue (and also the complete Inputpool) can be \textit{"closed"}, in which case also no additional reservation can be placed into the input pool in general.
 
 \begin{listing}[htbp]
 \begin{minted}[escapeinside=~~]{lexer.py:CoreASMLexer -x}
@@ -155,30 +123,18 @@ function inputPoolClosed : LIST * STRING * STRING * NUMBER
 \label{lst:shortasm:inputPool}
 \end{listing}
 
+The queues of the Inputpool are stored in the \asminline{inputPool} function. The function \asminline{inputPoolDefined} is used to keep track of the locations of the queues that are in use, so that their content can be checked upon termination. The function \asminline{inputPoolClosed} is used to store whether a queue is closed due to restrictions. The special location \asminline{inputPoolClosed(ch, undef, undef, undef)} is used to store whether the complete Inputpool is closed.
 
-The queues of the Inputpool are stored in the \asminline{inputPool} function.
-The function \asminline{inputPoolDefined} is used to keep track of the
-locations of the queues that are in use, so that their content can be checked
-upon termination. The function \asminline{inputPoolClosed} is used to store
-whether a queue is closed. The special location
-\asminline{inputPoolClosed(ch, undef, undef, undef)} is used to
-store whether the complete Inputpool is closed.
-
-The function \asminline{derived availableMessages(receiverChannel, senderSubjectID, msgType, ipCorrelationID)} returns the
-Messages from the location \asminline{inputPool(receiverChannel,
-senderSubjectID, msgType, ipCorrelationID)} that can be received, i.e. that it
-filters out reservations and reduces Messages from the same sender to only
-the oldest one.
+The function \asminline{derived availableMessages(receiverChannel, senderSubjectID, msgType, ipCorrelationID)} returns the Messages from the location \asminline{inputPool(receiverChannel,senderSubjectID, msgType, ipCorrelationID)} that can be received, i.e. that it filters out reservations and reduces Messages from the same sender to only the oldest one.
 
 \subsection{Subject Behavior}
 
-The Subject Behavior consists at least of one \textit{Main Macro}
-and might have an arbitrary number of minor Macros, called \textit{Additional Macros}.
+The Subject Behavior consists at least of one \textit{Main "Macro"} and might have an arbitrary number of minor Macros, called \textit{Additional Macros}. 
+
 
 \begin{listing}[htbp]
-\begin{minted}{lexer.py:CoreASMLexer -x}
-rule SubjectBehavior =
-  MacroBehavior(1)
+\begin{minted}{lexer.py:CoreASMLexer -x} 
+rule SubjectBehavior =  MacroBehavior(1)
 \end{minted}
 \caption{SubjectBehavior}
 \label{lst:shortasm:SubjectBehavior}
@@ -189,8 +145,7 @@ rule SubjectBehavior =
 % NOTE: extemely shortened: no execution state => no remainingStates
 
 
-The \asminline{MacroBehavior} rule controls the evaluation of all active
-states for the given Macro Instance~ID~\asminline{MI}.
+The \asminline{MacroBehavior} rule controls the evaluation of all active states for the given Macro Instance~ID~\asminline{MI}.
 
 
 \begin{listing}[htbp]
@@ -208,17 +163,9 @@ From that list a state \asminline{stateNumber} is chosen to be evaluated with th
 
 % State
 
+The evaluation of a state is structured into three main phases: initialization, the state function and an optional transition behavior.
 
-The evaluation of a state is structured into three main phases: initialization,
-the state function and an optional transition behavior.
-
-The state function is responsible for the selection of an outgoing transition and
-has to supervise the Timeout. It also has to enable and disable its outgoing
-transitions, meaning that transitions can be available depending on some dynamic state,
-for example whether a certain Message is present in the Inputpool.
-Usually the outgoing transition will be selected by the environment, however with
-auto-transitions it is possible that such an transition is automatically selected as soon
-as it becomes enabled and as long as there are no other transitions to select from.
+The state function is responsible for the selection of an outgoing transition and has to supervise the Timeout. It also has to enable and disable its outgoing transitions, meaning that transitions can be available depending on some dynamic state, for example whether a certain Message is present in the Inputpool. Usually the outgoing transition will be selected by the environment, however with auto-transitions it is possible that such an transition is automatically selected as soon as it becomes enabled and as long as there are no other transitions to select from.
 
 
 \begin{listing}[htbp]
@@ -246,25 +193,15 @@ rule Behavior(MI, currentStateNumber) =
 \end{listing}
 
 
-In the beginning the \asminline{Behavior} rule initializes the state with the
-\asminline{StartState} rule, which will set \asminline{initializedState} to
-\asminline{true}. If the function should not be aborted the \asminline{Perform}
-rule calls the state behavior of the underlying function until it is
-\asminline{completed}.
-In the next phase the selected transition will be initialized by the
-\asminline{StartSelectedTransition} rule and the transition behavior will be performed with
-the \asminline{PerformTransition} rule until it is completed as well. As last step
-the \asminline{Proceed} rule removes the current state and adds the selected
-transition's target state.
+In the beginning the \asminline{Behavior} rule initializes the state with the \asminline{StartState} rule, which will set \asminline{initializedState} to \asminline{true}. If the function should not be aborted the \asminline{Perform} rule calls the state behavior of the underlying function until it is \asminline{completed}.
+
+In the next phase the selected transition will be initialized by the \asminline{StartSelectedTransition} rule and the transition behavior will be performed with the \asminline{PerformTransition} rule until it is completed as well. As last step the \asminline{Proceed} rule removes the current state and adds the selected transition's target state.
 
 %---
 
-The environment has full read access to all functions of this semantics and knows
-therefore each running Subject, their Macro Instances and their active states.
+The environment has full read access to all functions of this semantics and knows therefore each running Subject, their Macro Instances and their active states.
 
-To define a homogeneous interface between the Function semantics and the environment we
-define the function \asminline{wantInput} to be written by an Function when it
-requires an external input, for example if an outgoing transition has to be chosen.
+To define a homogeneous interface between the Function semantics and the environment we define the function \asminline{wantInput} to be written by an Function when it requires an external input, for example if an outgoing transition has to be chosen.
 
 
 
@@ -278,15 +215,11 @@ function wantInput : LIST * NUMBER * NUMBER -> SET
 \end{listing}
 
 
-This function is read by our console application for all active states
-to present the user a list of possible decisions that can be made.
+This function is read by our console application for all active states to present the user a list of possible decisions that can be made.
 
-The environment then writes its external input in a corresponding function, for
-example for a transition decision into the \asminline{selectedTransition} function, and
-clears the \asminline{wantInput} function of that state.
+The environment then writes its external input in a corresponding function, for example for a transition decision into the \asminline{selectedTransition} function, and clears the \asminline{wantInput} function of that state.
 
-The \asminline{SelectTransition} rule adds the \asminline{"TransitionDecision"}
-requirement into the \asminline{wantInput} function.
+The \asminline{SelectTransition} rule adds the \asminline{"TransitionDecision"} requirement into the \asminline{wantInput} function.
 
 
 \begin{listing}[htbp]
@@ -308,20 +241,14 @@ rule SelectTransition(MI, currentStateNumber) =
 
 
 If the \asminline{wantInput} function already contains the
-\asminline{"TransitionDecision"} requirement nothing needs to be done and another
-state can be evaluated by the \asminline{MacroBehavior} rule.
-The same applies if there are no outgoing transitions enabled.
-Otherwise the requirement is added to the \asminline{wantInput} function.
+\asminline{"TransitionDecision"} requirement nothing needs to be done and another state can be evaluated by the \asminline{MacroBehavior} rule. The same applies if there are no outgoing transitions enabled. Otherwise the requirement is added to the \asminline{wantInput} function.
 
 
 \subsection{Internal Action}
 
 
-The \emph{Internal Action} is used to model DoStates, Subject-internal activities and decisions.
-It is labeled with a textual description of the activity that the Agent should perform.
-The outgoing transitions are labeled with a textual description of the possible execution results.
-Since the activity is performed outside of the interpreter all outgoing transitions are enabled from the beginning on and no transition rule has to be defined.
-Therefore the state function only consists of the timeout check and transition selection.
+The \emph{Internal Action} is used to model the execution of DoStates, Subject-internal activities, and decisions. It is labeled with a textual description of the activity that the Agent should perform. The outgoing transitions are labeled with a textual description of the possible execution results.
+Since the activity is performed outside of the interpreter all outgoing transitions are enabled from the beginning on and no transition rule has to be defined. Therefore the state function only consists of the timeout check and transition selection.
 
 
 \begin{listing}[htbp]
@@ -337,9 +264,7 @@ rule StartInternalAction(MI, currentStateNumber) = {
 \end{listing}
 
 
-
-The initialization of the InternalAction starts the Timeout and enables all
-outgoing transitions.
+The initialization of the InternalAction starts the Timeout and enables all outgoing transitions.
 
 
 \begin{listing}[htbp]
@@ -367,24 +292,12 @@ been set.
 
 
 
-
 \subsection{Send Function}
 
 
-The Send Function sends a Message. Disregarding the optional Timeout and Cancel
-transitions it must have exactly one outgoing transition which has to have parameters that
-define at least the Messagetype and the receiver's Subject~ID.
+Straight forward, the Send Function sends a Message. Reminder: Disregarding the optional Timeout and Cancel transitions, a Send State in the model must have exactly one outgoing transition which has to have parameters that define at least the Messagetype and the receiver's Subject~ID.
 
-An \textit{all-or-none} strategy is used to send Messages to MultiSubjects,
-which means that the actual Message is only send when all receivers are able
-to store it in their Inputpool. Therefore the Send Function is structured into
-two phases: in the first phase, realized as state function, reservation Messages
-are placed and in the second phase, realized as transition function, these reservations
-are replaced with the actual Message.
-
-To place a reservation in a receiver's Inputpool there must be space available
-in the corresponding queue and the receiver must not be
-\textit{non-proper} terminated.
+An \textit{all-or-none} strategy is used to send Messages to MultiSubjects, which means that the actual Message is only send when all receivers are able to store it in their Inputpool. Therefore the Send Function is structured into two phases: in the first phase, realized as state function, reservation Messages are placed and in the second phase, realized as transition function, these reservations are replaced with the actual Message. To place a reservation in a receiver's Inputpool there must be space available in the corresponding queue and the receiver instance must not be \textit{non-proper} terminated.
 
 
 \begin{listing}[htbp]
@@ -413,15 +326,9 @@ function nextCorrelationIDUsedBy : NUMBER -> Agents
 
 
 The Send Function stores the message content it has to send in the
-\asminline{messageContent} function. The \asminline{receivers} function is
-used to store the required receivers. When a reservation message has been
-placed at a receiver its Channel is added to the \asminline{reservationsDone}
-function.
+\asminline{messageContent} function. The \asminline{receivers} function is used to store the required receivers. When a reservation message has been placed at a receiver its Channel is added to the \asminline{reservationsDone} function.
 
-The global function \asminline{nextCorrelationID} is used to increment
-CorrelationIDs. To ensure the uniqueness of a CorrelationID the
-\asminline{nextCorrelationIDUsedBy} function is used to store the ASM agent
-that used the given CorrelationIDs.
+The global function \asminline{nextCorrelationID} is used to increment CorrelationIDs. To ensure the uniqueness of a CorrelationID the \asminline{nextCorrelationIDUsedBy} function is used to store the ASM agent that used the given CorrelationIDs.
 
 
 \begin{listing}[htbp]
@@ -461,16 +368,7 @@ rule StartSend(MI, currentStateNumber) =
 \end{listing}
 
 
-The initialization of the Send Function resets / initializes the \asminline{receivers} and
-\asminline{reservationsDone} functions.
-If the communication transition has a \asminline{messageContentVar} parameter given the
-content of that Variable is loaded and stored in the \asminline{messageContent}
-function. If it has a \asminline{messageNewCorrelationVar} parameter given
-a new CorrelationID is created and stored in the \asminline{messageCorrelationID} function.
-It will be stored in the Variable after the messages have been send.
-If the message that will be send correlates to a previous message from the receiver
-the CorrelationID from the Variable in \asminline{messageWithCorrelationVar} will be loaded
-so that the message is stored in the corresponding input pool queue of the receiver.
+The initialization of the Send Function resets / initializes the \asminline{receivers} and \asminline{reservationsDone} functions. If the communication transition has a \asminline{messageContentVar} parameter given the content of that Variable is loaded and stored in the \asminline{messageContent} function. If it has a \asminline{messageNewCorrelationVar} parameter given a new CorrelationID is created and stored in the \asminline{messageCorrelationID} function. It will be stored in the Variable after the messages have been send. If the message that will be send correlates to a previous message from the receiver the CorrelationID from the Variable in \asminline{messageWithCorrelationVar} will be loaded so that the message is stored in the corresponding input pool queue of the receiver.
 
 
 \begin{listing}[htbp]
@@ -499,19 +397,9 @@ rule PerformSend(MI, currentStateNumber) =
 \end{listing}
 
 
-In the state function the \asminline{SelectReceivers} rule is called until
-the \asminline{receivers} have been selected. The \asminline{SelectReceivers} rule
-interacts with the environment through the Selection and SelectAgent Functions
-in order to either select existing Channels from a Variable, given as parameter
-on the communication edge, or to select new assignments of Agents for the receiver
-Subject.
+In the state function the \asminline{SelectReceivers} rule is called until the \asminline{receivers} have been selected. The \asminline{SelectReceivers} rule interacts with the environment through the Selection and SelectAgent Functions in order to either select existing Channels from a Variable, given as parameter on the communication edge, or to select new assignments of Agents for the receiver Subject.
 
-The Timeout is started only when the \asminline{receivers} and the
-\asminline{messageContent} functions are defined. Until all reservations are
-placed, and if no Timeout occurs, the \asminline{DoReservations} rule attempts
-to place further reservation messages. If all reservations are placed the
-\asminline{TryCompletePerformSend} rule completes the state function, depending
-on whether no receiver is \textit{non-proper} terminated.
+The Timeout is started only when the \asminline{receivers} and the \asminline{messageContent} functions are defined. Until all reservations are placed, and if no Timeout occurs, the \asminline{DoReservations} rule attempts to place further reservation messages. If all reservations are placed the \asminline{TryCompletePerformSend} rule completes the state function, depending on whether no receiver is \textit{non-proper} terminated.
 
 
 \begin{listing}[htbp]
@@ -529,14 +417,7 @@ rule SetMessageContent(MI, currentStateNumber) =
 \label{lst:shortasm:SetMessageContent}
 \end{listing}
 
-
-
-The \asminline{SetMessageContent} rule is called if no message content is
-given as parameter on the communication transition until the \asminline{messageContent}
-function is written by the environment.
-
-
-
+The \asminline{SetMessageContent} rule is called if no message content is given as parameter on the communication transition until the \asminline{messageContent} function is written by the environment.
 
 
 \begin{listing}[htbp]
@@ -556,9 +437,7 @@ rule DoReservations(MI, currentStateNumber) =
 
 
 
-The \asminline{DoReservations} rule iterates over all receivers that did not
-already receive a reservation message. The \asminline{DoReservation} rule
-then tries to place a reservation message for such receiver.
+The \asminline{DoReservations} rule iterates over all receivers that did not already receive a reservation message. The \asminline{DoReservation} rule then tries to place a reservation message for such receiver.
 
 \begin{listing}[htbp]
 \begin{minted}{lexer.py:CoreASMLexer -x}
@@ -603,19 +482,9 @@ rule DoReservation(MI, currentStateNumber, receiverChannel) =
 \end{listing}
 
 
-The \asminline{DoReservation} rule does not try to place a reservation message
-if the receiver is \textit{non-proper} terminated. Otherwise it determines
-the necessary parameters of the queue to use and builds the reservation message.
-To support sending to an External Subject a translation of the sender's original
-Subject~ID to the Subject~ID used in the External Process is performed by the
-\asminline{searchSenderSubjectID} function.
+The \asminline{DoReservation} rule does not try to place a reservation message if the receiver is \textit{non-proper} terminated. Otherwise it determines the necessary parameters of the queue to use and builds the reservation message. To support sending to an External Subject a translation of the sender's original Subject~ID to the Subject~ID used in the External Process is performed by the \asminline{searchSenderSubjectID} function.
 
-When the queue at \asminline{inputPool(rCh, xSID, msgType, dstCorr)} was not
-created yet a new queue is assigned to that location and remembered in the
-\asminline{inputPoolDefined} function on the receiver's side.
-If the queue is either closed or full no reservation message can be placed,
-otherwise it is enqueued at the end.
-
+When the queue at \asminline{inputPool(rCh, xSID, msgType, dstCorr)} was not created yet a new queue is assigned to that location and remembered in the \asminline{inputPoolDefined} function on the receiver's side. If the queue is either closed or full no reservation message can be placed, otherwise it is enqueued at the end.
 
 
 \begin{listing}[htbp]
@@ -646,11 +515,7 @@ rule TryCompletePerformSend(MI, currentStateNumber) =
 \end{listing}
 
 
-After all reservations could be placed the \asminline{TryCompletePerformSend}
-rule has to ensure that no receiver terminated \textit{non-proper} in the
-meantime. In that case the Send Function blocks and can only be left by a
-Timeout or Cancel transition. Otherwise the state function is completed and the behavior can
-continue with the transition function.
+After all reservations could be placed the \asminline{TryCompletePerformSend} rule has to ensure that no receiver terminated \textit{non-proper} in the meantime. In that case the Send Function blocks and can only be left by a Timeout or Cancel transition. Otherwise the state function is completed and the behavior can continue with the transition function.
 
 
 \begin{listing}[htbp]
@@ -683,13 +548,7 @@ rule PerformTransitionSend(MI, currentStateNumber, t) =
 \end{listing}
 
 
-The transition function calls the \asminline{ReplaceReservation} rule to replace all
-reservations with the actual Message. The \asminline{EnsureRunning} rule
-(re)starts a receiver if it is not already running.
-If the communication transition has the parameter \asminline{messageStoreReceiverVar} defined
-the used receivers of the Message are stored in that Variable.
-Also, if the communication transition has the parameter \asminline{messageNewCorrelationVar} defined
-the CorrelationID that was created in \asminline{StartSend} and used for the send messages will be stored in the given Variable.
+The transition function calls the \asminline{ReplaceReservation} rule to replace all reservations with the actual Message. The \asminline{EnsureRunning} rule (re)starts a receiver if it is not already running. If the communication transition has the parameter \asminline{messageStoreReceiverVar} defined the used receivers of the Message are stored in that Variable. Also, if the communication transition has the parameter \asminline{messageNewCorrelationVar} defined the CorrelationID that was created in \asminline{StartSend} and used for the send messages will be stored in the given Variable.
 
 
 \begin{listing}[htbp]
@@ -717,10 +576,7 @@ rule ReplaceReservation(MI, currentStateNumber, receiverChannel) =
 \end{listing}
 
 
-Analogous to the \asminline{DoReservation} rule the
-\asminline{ReplaceReservation} rule has to determine the queue and build both
-the reservation message and the actual Message. It then can replace the reservation
-in the queue with the actual message.
+Analogous to the \asminline{DoReservation} rule the \asminline{ReplaceReservation} rule has to determine the queue and build both the reservation message and the actual Message. It then can replace the reservation in the queue with the actual message.
 
 
 \begin{listing}[htbp]
@@ -766,25 +622,16 @@ rule CancelReservation(MI, currentStateNumber, receiverChannel) =
 \end{listing}
 
 
-Just like the \asminline{ReplaceReservation} rule the
-\asminline{CancelReservation} rule determines the location of the queue and
-rebuilds the reservation message. It then removes the reservation from the
-queue.
+Just like the \asminline{ReplaceReservation} rule the \asminline{CancelReservation} rule determines the location of the queue and rebuilds the reservation message. It then removes the reservation from the queue.
 
 
 \subsection{Receive Function}
 
 
-The Receive Function retrieves Messages from the input pool. The state function
-updates the enabled outgoing transitions according to the available Messages in
-the corresponding queue. When an outgoing transition is selected the Messages
-are removed from the queue by the transition function.
+The Receive Function retrieves Messages from the input pool. The state function updates the enabled outgoing transitions according to the available Messages in the corresponding queue. When an outgoing transition is selected the Messages are removed from the queue by the transition function.
 
 
-In the beginning of the state function the Timeout is started and then checked
-each time.
-If the Timeout doesn't need to be activated each outgoing transition is either set to
-be enabled, or disabled by the \asminline{CheckIP} rule.
+In the beginning of the state function the Timeout is started and then checked each time. If the Timeout doesn't need to be activated each outgoing transition is either set to be enabled, or disabled by the \asminline{CheckIP} rule.
 
 
 \begin{listing}[htbp]
@@ -835,11 +682,7 @@ rule PerformReceive(MI, currentStateNumber) =
 
 
 
-When exactly one auto transition is enabled, and no transition had been selected, an
-automatic selection for that transition is made. Otherwise, a transition decision from
-the environment is required.
-
-
+When exactly one auto transition is enabled, and no transition had been selected, an automatic selection for that transition is made. Otherwise, a transition decision from the environment is required.
 
 
 \begin{listing}[htbp]
@@ -864,15 +707,9 @@ rule CheckIP(MI, currentStateNumber, t) =
 \end{listing}
 
 
-The \asminline{CheckIP} rule loads the parameters from the communication transition attributes
-to determine the corresponding queue and the available Messages in it. The
-\asminline{messageSubjectCountMin} argument defines the minimal required
-number of different sender Agents of a MultiSubject. If the optional
-parameter \asminline{messageWithCorrelationVar} is not set, the
-CorrelationID~0 is used.
+The \asminline{CheckIP} rule loads the parameters from the communication transition attributes to determine the corresponding queue and the available Messages in it. The \asminline{messageSubjectCountMin} argument defines the minimal required number of different sender Agents of a MultiSubject. If the optional parameter \asminline{messageWithCorrelationVar} is not set, the CorrelationID~0 is used.
 
-When there are sufficient Messages, from different Agents of a MultiSubject,
-available, the transition is enabled, otherwise it is set to be disabled.
+When there are sufficient Messages, from different Agents of a MultiSubject, available, the transition is enabled, otherwise it is set to be disabled.
 
 
 
@@ -904,22 +741,15 @@ rule PerformTransitionReceive(MI, currentStateNumber, t) =
 \label{lst:shortasm:PerformTransitionReceive}
 \end{listing}
 
-The transition function removes the available Messages from the input pool and
-optionally stores them in the Variable given as transition parameter
-\asminline{messageStoreMessagesVar}.
+The transition function removes the available Messages from the input pool and optionally stores them in the Variable given as transition parameter \asminline{messageStoreMessagesVar}.
 
-It first determines the location of the queue and passes them to the
-\asminline{InputPool_Pop} rule which removes up to \asminline{countMax}
-of the oldest Messages from the queue at the location
-\asminline{inputPool(ch, xSID, msgType, ipCorr)}
-and stores them temporarily in the \asminline{receivedMessages} function.
+It first determines the location of the queue and passes them to the \asminline{InputPool_Pop} rule which removes up to \asminline{countMax} of the oldest Messages from the queue at the location \asminline{inputPool(ch, xSID, msgType, ipCorr)} and stores them temporarily in the \asminline{receivedMessages} function.
 
 
 \subsection{Modal Split and Modal Join Functions}
 
 
-The ModalSplit Function initiates parallel execution paths that will be joined
-again in a ModalJoin Function.
+The ModalSplit Function initiates parallel execution paths that will be joined again in a ModalJoin Function.
 
 
 \begin{listing}[htbp]
@@ -941,8 +771,7 @@ rule ModalSplit(MI, currentStateNumber, args) =
 \end{listing}
 
 
-It adds the target states of all outgoing transitions to the active states of its
-Macro Instance and removes itself.
+It adds the target states of all outgoing transitions to the active states of its Macro Instance and removes itself.
 
 
 
@@ -978,29 +807,15 @@ rule ModalJoin(MI, currentStateNumber, args) =
 \end{listing}
 
 
-The ModalJoin Function takes the number of execution paths to join as parameter,
-which doesn't need to be modelled explicitly as it could be determined when the Process Model is parsed.
-The \asminline{joinCount} function is used to count how
-many times an execution path was already joined and is incremented each time an
-execution path leads to this state.
+The ModalJoin Function takes the number of execution paths to join as parameter, which doesn't need to be modelled explicitly as it could be determined when the Process Model is parsed. The \asminline{joinCount} function is used to count how many times an execution path was already joined and is incremented each time an execution path leads to this state.
 
-Until all but one execution paths are joined the current state is removed
-from the list of active states of the current Macro Instance. If the last
-execution path reached this state the \asminline{joinCount} function is reset for the next
-iteration, and the state function is set to ''completed'', so that the Macro Behavior proceeds
-regularly to the next state.
-
-
-
+Until all but one execution paths are joined the current state is removed from the list of active states of the current Macro Instance. If the last execution path reached this state the \asminline{joinCount} function is reset for the next iteration, and the state function is set to ''completed'', so that the Macro Behavior proceeds regularly to the next state.
 
 
 \subsection{CallMacro Function}
 
 
-The CallMacro Function creates a new Macro Instance for the Macro~ID given as
-first parameter. It is responsible for the evaluation of that Macro Instance
-and therefore calls the \asminline{MacroBehavior} rule with the created Macro
-Instance~ID.
+The CallMacro Function creates a new Macro Instance for the Macro~ID given as first parameter. It is responsible for the evaluation of that Macro Instance and therefore calls the \asminline{MacroBehavior} rule with the created Macro Instance~ID.
 
 
 \begin{listing}[htbp]
@@ -1020,14 +835,9 @@ function callMacroChildInstance : LIST * NUMBER * NUMBER -> NUMBER
 
 
 
-The \asminline{callMacroChildInstance} function stores the Macro Instance~ID
-of the created Macro Instance. The \asminline{macroTerminationResult}
-function is written, either with the boolean \asminline{true} or a string to
-indicate which outgoing transition of the MacroState should be selected, when the
-Macro Instance terminates.
+The \asminline{callMacroChildInstance} function stores the Macro Instance~ID of the created Macro Instance. The \asminline{macroTerminationResult} function is written, either with the boolean \asminline{true} or a string to indicate which outgoing transition of the MacroState should be selected, when the Macro Instance terminates.
 
-The state function has two phases: in the beginning the Macro Instance is created
-and then in the main phase evaluated.
+The state function has two phases: in the beginning the Macro Instance is created and then in the main phase evaluated.
 
 
 
@@ -1072,22 +882,13 @@ rule CallMacro(MI, currentStateNumber, args) =
 \end{listing}
 
 
-In the first phase the value of the \asminline{nextMacroInstanceNumber}
-function is stored in the \asminline{callMacroChildInstance} function and
-incremented. The \asminline{activeStates} for the new Macro Instance is
-initialized and the start state will be added later on in the
-\asminline{MacroBehavior} rule of the current Macro Instance.
+In the first phase the value of the \asminline{nextMacroInstanceNumber} function is stored in the \asminline{callMacroChildInstance} function and incremented. The \asminline{activeStates} for the new Macro Instance is initialized and the start state will be added later on in the \asminline{MacroBehavior} rule of the current Macro Instance.
 
-The CallMacro Function can have an optional list of Variable names whose values
-are passed into Macro Instance-local Variables of the called Macro Instance with
-the \asminline{InitializeMacroArguments} rule.
+The CallMacro Function can have an optional list of Variable names whose values are passed into Macro Instance-local Variables of the called Macro Instance with the \asminline{InitializeMacroArguments} rule.
 
 The second phase evaluates the created Macro Instance.
 
-When the Macro Instance has terminated its result is used to select the
-outgoing transition of the CallMacro state and the \asminline{callMacroChildInstance}
-function is reset for the next iteration. Otherwise the
-\asminline{MacroBehavior} rule is called for the created Macro Instance~ID.
+When the Macro Instance has terminated its result is used to select the outgoing transition of the CallMacro state and the \asminline{callMacroChildInstance} function is reset for the next iteration. Otherwise the \asminline{MacroBehavior} rule is called for the created Macro Instance~ID.
 
 
 
@@ -1112,17 +913,12 @@ rule InitializeMacroArguments(MI, mIDNew, MINew, givenSrcVNames) =
 \end{listing}
 
 
-The \asminline{InitializeMacroArguments} rule iterates over all required macro
-parameters. For each parameter it loads the value of the Variable in the current Macro Instance and stores it in the
-new Macro Instance.
-
-
+The \asminline{InitializeMacroArguments} rule iterates over all required macro parameters. For each parameter it loads the value of the Variable in the current Macro Instance and stores it in the new Macro Instance.
 
 
 \subsection{Terminate Function}
 
-The Terminate Function is used to terminate the current Macro Instance and has no outgoing transitions.
-If the current Macro Instance is the Main Macro Instance the Terminate Function terminates the Subject.
+The Terminate Function is used to terminate the current Macro Instance and has no outgoing transitions. If the current Macro Instance is the Main Macro Instance the Terminate Function terminates the Subject.
 
 
 \begin{listing}[htbp]
@@ -1164,22 +960,11 @@ rule PerformTerminate(MI, currentStateNumber) =
 \end{listing}
 
 
-The \asminline{PerformTerminate} rule calls the \asminline{AbortMacroInstance} rule
-until no other states are active in the current Macro Instance.
+The \asminline{PerformTerminate} rule calls the \asminline{AbortMacroInstance} rule until no other states are active in the current Macro Instance.
 
-If the current Macro Instance is the Main Macro Instance the Subject terminates.
-To do so the End Function resets all Variables of the Subject and terminates the
-ASM agent.
-Additionally, the \asminline{FinalizeInteraction} rule is called, which will
-block future subject starts, if there are remaining messages left in the Inputpool,
-which means, that the subject is \textit{non-proper} terminated.
+If the current Macro Instance is the Main Macro Instance the Subject terminates.To do so the End Function resets all Variables of the Subject and terminates the ASM agent. Additionally, the \asminline{FinalizeInteraction} rule is called, which will block future subject starts, if there are remaining messages left in the Inputpool, which means, that the subject is \textit{non-proper} terminated.
 
-Otherwise, the Macro Instance was created by a CallMacro Function and only the
-Variables of the current Macro Instance are reset. If the Terminate Function has a
-parameter, it is stored in the function \asminline{macroTerminationResult}, so
-that the CallMacro Function proceeds with the corresponding outgoing transition.
-If no parameter is given the value is just set to \asminline{true} to indicate a
-termination without any particular result.
+Otherwise, the Macro Instance was created by a CallMacro Function and only the Variables of the current Macro Instance are reset. If the Terminate Function has a parameter, it is stored in the function \asminline{macroTerminationResult}, so that the CallMacro Function proceeds with the corresponding outgoing transition. If no parameter is given the value is just set to \asminline{true} to indicate a termination without any particular result.
 
 % reset font sizes
 \setminted{fontsize=\normalsize}

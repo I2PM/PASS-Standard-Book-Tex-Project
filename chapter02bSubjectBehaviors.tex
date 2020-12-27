@@ -134,6 +134,7 @@ Finally as PASS is often used to model business processes, it is useful to be ab
 
 As with the Timer Transition, the exact time definition can again either be based on calendarial consideration (\PASSModelElement{Calendar Based Reminder} Transition) or be based on hours, minuet, or seconds (\PASSModelElement{Time Based Reminder Transition}).
 
+Reminder Time Transitions are used only in States that will be (re-)visited multiple times. Furthermore, since \PASSModelElement{Send States} should be executed directly, Reminder Transitions should not originated from them. Reminder Tranistions should only originate from \PASSModelElement{Receive States} and possibly from \PASSModelElement{Do States}
 
 \subsubsection{Sending Failed Transition}
 
