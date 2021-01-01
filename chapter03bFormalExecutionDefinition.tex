@@ -10,22 +10,26 @@ While the the correct structure and syntax of Parallel Activity Specification Sc
 
 The original PASS ASM execution specification was formulated in \cite{boerger2011interpreter} in 2011, but is now somewhat outdated in terms of PASS model elements covered in the specification as well as the used vocabulary. 
 
-While not yet covering all PASS elements, the current version of PASS execution is based on \cite{article:PASS-ASM} and \cite{article:PASS-CoreASM}. This version is not a pure ASM specification, but rather a specification meant for \textit{CoreASM}, an open-source ASM execution engine/software implemented for the JAVA Virtual Machine (JVM)\cite{Farahbod2011}. Thereby, it is basically an execution specification as well as a reference implementation at the same time\footnote{Next actual ASM spec and the CoreASM framework, the referential implementation is also complemented by a console application that is connected to the CoreASM Engine and enables an interactive abstract process evaluation. A detailed description of the architecture is given in section~\ref{CoreASM-Reference-Implementation-Architecture}.}.
+While not yet covering all PASS elements, the current version of PASS execution is based on \cite{article:PASS-ASM} and \cite{article:PASS-CoreASM}. This version is not a pure ASM specification, but rather a specification meant for \textit{CoreASM}, an open-source ASM execution engine/software implemented for the JAVA Virtual Machine (JVM)\cite{Farahbod2011}. Thereby, it is basically an execution specification as well as a reference implementation at the same time\footnote{Next actual ASM spec and the CoreASM framework, the referential implementation is also complemented by a console application that is connected to the CoreASM Engine and enables an interactive abstract process evaluation. A detailed description of the architecture is given in Appendix Section~\ref{CoreASM-Reference-Implementation-Architecture}.}.
 
 This section provides a commented overview over the CoreASM PASS Reference Implementation. Only a reduced set of language elements are shown. Advanced/sub functions and implementation details are left out, which allows to shorten various rules for a focus on their core semantics. Therefore all contents of this section are a non-normative introduction to the topic of formal execution semantics. The complete spec is provided in Appendix~\ref{CoreASM-Reference-Implementation}. 
 
 
 \subsection{Differences}
 
-Note that there are some conceptional differences between the reference implementation and the OWL description. Important differences are:
+Note that there are some conceptional differences between the ASM reference implementation and the OWL description. Important differences are:
 
 \begin{itemize}
     \item The End State concept is not supported, but instead a \textit{Terminate Function} is used.
     \item Choice Segment Paths are always both mandatory to start and end. Also they have to be started with the \textit{Modal Split Function} and joined with the \textit{Modal Join Function}, which are not part of the OWL-Structure Standard Definition.
     \item The reference implementation supports advanced features that are not covered by the OWL description, for example the Mobility of Channels concept and CorrelationIDs.
+    \item Multi-Behavior Subjects are only partially supported
 \end{itemize}
 
-A complete comparison of the conceptual differences is given in~\ref{CoreASM-Reference-Implementation-Differences-OWL-Model}.
+A complete comparison of the conceptual differences is given in Appendix Section ~\ref{CoreASM-Reference-Implementation-Differences-OWL-Model}.
+
+A comparison that systematically matches the ASM Execution concepts with the the OWL-Model concepts is given in Appendix Section \ref{sec:appendixMapping}.
+
 
 %simplifications for this chapter:
 %- no Observer support => no execution state, no state priorities => Cancel Function not required
@@ -33,6 +37,7 @@ A complete comparison of the conceptual differences is given in~\ref{CoreASM-Ref
 %  => no VarMan, Cancel, SelectAgents, Tau
 %- discuss: proper-termination and CloseIP/OpenIP are motivated from interaction soundness. include? mention? hard-exclude (remove references from code)?
 %- no KillBehavior (although recursive macros and reservation messages). therefore this will not be sound - but a bit less complicated
+
 
 
 \subsection{Foundation}
