@@ -113,7 +113,7 @@ The Akka actor of the engine has full read and write access to all CoreASM funct
 	\centering
     \begin{tabular}[t]{@{}p{0.23\linewidth} p{0.35\linewidth} p{0.35\linewidth} @{}}
         \toprule
-        Concept & Reference Implementation & OWL Description \\
+        Concept & Reference Implementation & Corresponding OWL Element Description \\
         \midrule
 
         % included in Chapter 3
@@ -175,7 +175,7 @@ The Akka actor of the engine has full read and write access to all CoreASM funct
 \end{table}
 
 The most important differences are listed in Table~\ref{tbl:asm:concepts_1}:
-while the OWL description offers both synchronous and asynchronous communication, different InputPool limits and handling strategies
+while the corresponding OWL Element Description offers both synchronous and asynchronous communication, different InputPool limits and handling strategies
 this reference implementation addresses only asynchronous communication with a blocking strategy.
 The End State property is not supported, but instead a Terminate Function is used.
 %Conceptually the End State is not a property of a state, but provides a distinguished function specification
@@ -187,7 +187,7 @@ Next, the execution of Choice Segment Paths is not controlled by a Choice Segmen
 	\centering
     \begin{tabular}[t]{@{}p{0.23\linewidth} p{0.35\linewidth} p{0.35\linewidth} @{}}
         \toprule
-        Concept & Reference Implementation & OWL Description \\
+        Concept & Reference Implementation & Corresponding OWL Element Description \\
         \midrule
 
         % included in Chapter 3
@@ -280,7 +280,7 @@ allowing a Data Object to be accessible either "globally" for all states in all 
 only within a single Macro Behavior instance, allowing macros to execute concurrently without influencing each other.
 Further, this enables copying Data Ojects as arguments from the scope of a Macro State into the scope of the called Macro instance.
 
-While the OWL description merely anticipates Data Mapping Functions
+While the Corresponding OWL Element Description merely anticipates Data Mapping Functions
 there are concrete implementations to use Data Objects in the Send and Receive Functions.
 Additionally, this reference implementation provides Data Modification Functions to perform operations on Data Objects.
 
@@ -290,7 +290,7 @@ Additionally, this reference implementation provides Data Modification Functions
 	\centering
     \begin{tabular}[t]{@{}p{0.23\linewidth} p{0.35\linewidth} p{0.35\linewidth} @{}}
         \toprule
-        Concept & Reference Implementation & OWL Description \\
+        Concept & Reference Implementation & Corresponding OWL Element Description \\
         \midrule
 
         % absent
@@ -366,7 +366,7 @@ After the exception handling the Subject can be terminated with the End State, t
 	\centering
     \begin{tabular}[t]{@{}p{0.23\linewidth} p{0.35\linewidth} p{0.35\linewidth} @{}}
         \toprule
-        Concept & Reference Implementation & OWL Description \\
+        Concept & Reference Implementation & Corresponding OWL Element Description \\
         \midrule
 
         % not shown in Chapter 3
