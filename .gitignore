@@ -1,3 +1,4 @@
+*.orig
 
 # Created by https://www.toptal.com/developers/gitignore/api/windows,linux,macos,eclipse,intellij+all,vim,latex
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,macos,eclipse,intellij+all,vim,latex
