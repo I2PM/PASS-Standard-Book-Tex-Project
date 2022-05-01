@@ -462,12 +462,12 @@ that are used for continuous integration testing, which have also been removed i
 \begin{minted}{lexer.py:CoreASMLexer -x}
 function channelFor : Agents -> LIST
 
-derived processIDFor(a)       = processIDOf(channelFor(a))
+derived processModelIDFor(a)  = processModelIDOf(channelFor(a))
 derived processInstanceFor(a) = processInstanceOf(channelFor(a))
 derived subjectIDFor(a)       = subjectIDOf(channelFor(a))
 derived agentFor(a)           = agentOf(channelFor(a))
 
-derived processIDOf(ch)       = nth(ch, 1)
+derived processModelIDOf(ch)  = nth(ch, 1)
 derived processInstanceOf(ch) = nth(ch, 2)
 derived subjectIDOf(ch)       = nth(ch, 3)
 derived agentOf(ch)           = nth(ch, 4)
@@ -551,7 +551,7 @@ function transitionCompleted : LIST * NUMBER * NUMBER -> BOOLEAN
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 derived shouldTimeout(ch, MI, stateNumber) = return boolres in
-  let pID = processIDOf(ch) in
+  let pID = processModelIDOf(ch) in
     if (hasTimeoutTransition(pID, stateNumber) = true
         and startTime(ch, MI, stateNumber) != undef) then
       let t = outgoingTimeoutTransition(pID, stateNumber) in
@@ -676,9 +676,10 @@ rule GenerateUniqueProcessInstanceID = {
 
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
-rule StartProcess(processID, additionalInitializationSubject,
-                             additionalInitializationAgent) =
-  let pID = processID in
+rule StartProcessModel(processModelID,
+                       additionalInitializationSubject,
+                       additionalInitializationAgent) =
+  let pID = processModelID in
   local PI in
     seq
       PI <- GenerateUniqueProcessInstanceID()
@@ -704,8 +705,8 @@ rule StartProcess(processID, additionalInitializationSubject,
             SelectAgentAndStartASMAgent(pID, PI, sID)
     }
 \end{minted}
-\caption{StartProcess}
-\label{lst:asm:StartProcess}
+\caption{StartProcessModel}
+\label{lst:asm:StartProcessModel}
 \end{listing}
 
 
@@ -755,7 +756,7 @@ rule InitializeSubject(ch) = PrepareReceptionOfMessages(ch)
 \begin{minted}[fontsize=\footnotesize,escapeinside=~~]{lexer.py:CoreASMLexer -x}
 rule StartMainMacro =
   let ch = channelFor(self),
-     pID = processIDFor(self) in {
+     pID = processModelIDFor(self) in {
     killStates(ch) := []
 
     let MI = 0 in { // 0 => global / predefined variables
@@ -787,7 +788,7 @@ rule StartMainMacro =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule StartMacro(MI, currentStateNumber, mIDNew, MINew) = {
-  let pID = processIDFor(self) in
+  let pID = processModelIDFor(self) in
   let startState = macroStartState(pID, mIDNew) in {
     activeStates(channelFor(self), MINew) := []
     AddState(MI, currentStateNumber, MINew, startState)
@@ -934,7 +935,7 @@ rule KillBehavior(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule MacroBehavior(MI) =
   let ch = channelFor(self),
-     pID = processIDFor(self) in
+     pID = processModelIDFor(self) in
   local remainingStates := activeStates(ch, MI) in
     seq
       macroExecutionState(ch, MI) := undef
@@ -970,7 +971,7 @@ rule MacroBehavior(MI) =
 rule UpdateRemainingStates(MI, stateNumber,
                            exState, remainingStates) =
   let ch = channelFor(self),
-     pID = processIDFor(self) in
+     pID = processModelIDFor(self) in
   if (exState = REPEAT) then {
     remainingStates := [stateNumber]
 
@@ -1087,7 +1088,7 @@ rule Behavior(MI, currentStateNumber) =
     if (transitionCompleted(ch, MI, t) != true) then
       PerformTransition(MI, s, t)
     else {
-      Proceed(MI, s, targetStateNumber(processIDFor(self), t))
+      Proceed(MI, s, targetStateNumber(processModelIDFor(self), t))
       SetExecutionState(MI, s, DONE)
     }
 \end{minted}
@@ -1102,7 +1103,7 @@ rule Behavior(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule AbortState(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   if (abortionCompleted(ch, MI, s) != true) then
     Abort(MI, s)
@@ -1135,7 +1136,7 @@ rule AbortState(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule StartState(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in seqblock
     InitializeCompletion(MI, s)
     abortionCompleted(ch, MI, s) := false
@@ -1187,7 +1188,7 @@ rule ResetState(MI, stateNumber) =
 
     selectedTransition(ch, MI, s) := undef
 
-    let pID = processIDFor(self) in
+    let pID = processModelIDFor(self) in
     forall t in outgoingNormalTransitions(pID, s) do {
       transitionEnabled(ch, MI, t) := undef
       transitionCompleted(ch, MI, t) := undef
@@ -1215,7 +1216,7 @@ rule ResetState(MI, stateNumber) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule Perform(MI, currentStateNumber) =
-  let pID = processIDFor(self)
+  let pID = processModelIDFor(self)
         s = currentStateNumber in
   case stateType(pID, s) of
     "function"       : PerformFunction(MI, s)
@@ -1276,7 +1277,7 @@ rule StartSelectedTransition(MI, currentStateNumber) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransition(MI, currentStateNumber, t) =
-  let pID = processIDFor(self),
+  let pID = processModelIDFor(self),
         s = currentStateNumber in
   case stateType(pID, s) of
     "function"       : PerformTransitionFunction(MI, s, t)
@@ -1294,7 +1295,7 @@ rule PerformTransition(MI, currentStateNumber, t) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule StartFunction(MI, currentStateNumber) =
-  let pID = processIDFor(self) in
+  let pID = processModelIDFor(self) in
   let functionName = stateFunction(pID, currentStateNumber) in {
     StartTimeout(MI, currentStateNumber)
 
@@ -1322,7 +1323,7 @@ rule PerformFunction(MI, currentStateNumber) =
       ActivateTimeout(MI, s)
     }
     else
-      let pID = processIDFor(self) in
+      let pID = processModelIDFor(self) in
       let functionName = stateFunction(pID, s),
           args         = stateFunctionArguments(pID, s) in
         call performFunction(functionName) (MI, s, args)
@@ -1337,7 +1338,7 @@ rule PerformFunction(MI, currentStateNumber) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule AbortFunction(MI, currentStateNumber) =
-  let pID = processIDFor(self) in
+  let pID = processModelIDFor(self) in
   let functionName = stateFunction(pID, currentStateNumber) in
     if (abortFunction(functionName) = undef) then
       SetAbortionCompleted(MI, currentStateNumber)
@@ -1355,7 +1356,7 @@ rule AbortFunction(MI, currentStateNumber) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransitionFunction(MI, currentStateNumber, t) =
-  let pID = processIDFor(self),
+  let pID = processModelIDFor(self),
         s = currentStateNumber in
   let functionName = stateFunction(pID, s) in
     if (performTransitionFunction(functionName) = undef) then
@@ -1457,7 +1458,7 @@ rule EnableTransition(MI, t) =
   transitionEnabled(channelFor(self), MI, t) := true
 
 rule EnableAllTransitions(MI, currentStateNumber) =
-  let pID = processIDFor(self),
+  let pID = processModelIDFor(self),
         s = currentStateNumber in
     forall t in outgoingNormalTransitions(pID, s) do
       EnableTransition(MI, t)
@@ -1467,7 +1468,7 @@ rule DisableTransition(MI, currentStateNumber, t) =
 
 rule DisableAllTransitions(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in {
     forall t in outgoingNormalTransitions(ppID, s) do
       DisableTransition(MI, s, t)
@@ -1548,7 +1549,7 @@ rule PerformInternalAction(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule StartSend(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   // there must be exactly one transition
   let  t = first_outgoingNormalTransition(pID, s) in {
@@ -1619,7 +1620,7 @@ rule PerformSend(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule TryCompletePerformSend(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   if (anyNonProperTerminated(receivers(ch, MI, s)) = true) then
     // BLOCKED: a receiver where a reservation was placed has
@@ -1649,7 +1650,7 @@ rule TryCompletePerformSend(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule SelectReceivers(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   // there must be exactly one transition
   let t = first_outgoingNormalTransition(pID, s) in
@@ -1735,7 +1736,7 @@ rule AbortSend(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransitionSend(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in {
     foreach r in reservationsDone(ch, MI, s) do {
       ReplaceReservation(MI, s, r)
@@ -1824,11 +1825,11 @@ rule DoReservations(MI, currentStateNumber) =
 rule DoReservation(MI, currentStateNumber, receiverChannel) =
   if (properTerminated(receiverChannel) = true) then
     let ch = channelFor(self),
-       pID = processIDFor(self),
+       pID = processModelIDFor(self),
        sID = subjectIDFor(self),
          s = currentStateNumber in
     let Rch = receiverChannel,
-       RpID = processIDOf(receiverChannel) in
+       RpID = processModelIDOf(receiverChannel) in
     let sIDX = searchSenderSubjectID(pID, sID, RpID) in
     let msgCID = messageCorrelationID(ch, MI, s),
         RCID   = messageReceiverCorrelationID(ch, MI, s) in
@@ -1867,11 +1868,11 @@ rule DoReservation(MI, currentStateNumber, receiverChannel) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule CancelReservation(MI, currentStateNumber, receiverChannel) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
      sID = subjectIDFor(self),
        s = currentStateNumber in
   let Rch  = receiverChannel,
-      RpID = processIDOf(receiverChannel) in
+      RpID = processModelIDOf(receiverChannel) in
   let t  = first_outgoingNormalTransition(pID, s) in
   let mT = messageType(pID, t) in
   let sIDX   = searchSenderSubjectID(pID, sID, RpID),
@@ -1893,11 +1894,11 @@ rule CancelReservation(MI, currentStateNumber, receiverChannel) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule ReplaceReservation(MI, currentStateNumber, receiverChannel) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
      sID = subjectIDFor(self),
        s = currentStateNumber in
   let Rch  = receiverChannel,
-      RpID = processIDOf(receiverChannel) in
+      RpID = processModelIDOf(receiverChannel) in
   let t  = first_outgoingNormalTransition(pID, s) in
   let mT = messageType(pID, t) in
   let sIDX   = searchSenderSubjectID(pID, sID, RpID),
@@ -1922,7 +1923,7 @@ rule ReplaceReservation(MI, currentStateNumber, receiverChannel) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformReceive(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   // startTime must be the time of the first attempt to receive
   // in order to support receiving with timeout=0
@@ -1970,7 +1971,7 @@ rule PerformReceive(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransitionReceive(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   let sID      = messageSubjectId         (pID, t),
       mT       = messageType              (pID, t),
@@ -2001,7 +2002,7 @@ rule PerformTransitionReceive(MI, currentStateNumber, t) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule CheckIP(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   let sID      = messageSubjectId         (pID, t),
       mT       = messageType              (pID, t),
@@ -2028,7 +2029,7 @@ rule CheckIP(MI, currentStateNumber, t) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTerminate(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   if (|activeStates(ch, MI)| > 1) then {
     // does not remove currentStateNumber
@@ -2079,7 +2080,7 @@ rule StartTau(MI, currentStateNumber) =
 
 rule Tau(MI, currentStateNumber, args) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
     choose t in outgoingEnabledTransitions(t, MI, s)
         with (transitionIsAuto(pID, t) = true) do {
@@ -2353,7 +2354,7 @@ rule Selection(MI, currentStateNumber, src, minimum, maximum) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule ModalSplit(MI, currentStateNumber, args) =
-  let pID = processIDFor(self),
+  let pID = processModelIDFor(self),
         s = currentStateNumber in {
   // start all following states
   foreach t in outgoingNormalTransitions(pID, s) do
@@ -2435,7 +2436,7 @@ rule AbortCallMacro(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule InitializeMacroArguments(MI, mIDNew, MINew, givenSrcVNames) =
   local
-      dstVNames := macroArguments(processIDFor(self), mIDNew),
+      dstVNames := macroArguments(processModelIDFor(self), mIDNew),
       srcVNames := givenSrcVNames in
     while (|dstVNames| > 0) do {
       let dstVName = head(dstVNames),
@@ -2458,7 +2459,7 @@ rule InitializeMacroArguments(MI, mIDNew, MINew, givenSrcVNames) =
 \begin{minted}[escapeinside=~~]{lexer.py:CoreASMLexer -x}
 rule CallMacro(MI, currentStateNumber, args) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   let childInstance = callMacroChildInstance(ch, MI, s) in
   if (childInstance = undef) then
@@ -2513,7 +2514,7 @@ rule CallMacro(MI, currentStateNumber, args) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule CheckCancel(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self) in
+     pID = processModelIDFor(self) in
   let tName = transitionLabel(pID, t) in
   let nCancel = stateNumberFromID(pID, tName) in
   if (contains(activeStates(ch, MI), nCancel) = true) then
@@ -2533,7 +2534,7 @@ rule CheckCancel(MI, currentStateNumber, t) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule Cancel(MI, currentStateNumber, args) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   seq
     forall t in outgoingNormalTransitions(pID, s) do
@@ -2563,7 +2564,7 @@ rule Cancel(MI, currentStateNumber, args) =
 \begin{listing}[H]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule Abort(MI, currentStateNumber) =
-  let pID = processIDFor(self),
+  let pID = processModelIDFor(self),
         s = currentStateNumber in
     case stateType(pID, s) of
       "function"       : AbortFunction(MI, s)
@@ -2581,7 +2582,7 @@ rule Abort(MI, currentStateNumber) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransitionCancel(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
     let tLabel  = transitionLabel(pID, t) in
     let nCancel = stateNumberFromID(pID, tLabel) in {
@@ -2738,10 +2739,10 @@ rule IsIPEmpty(MI, currentStateNumber, args) =
 // Channel * MacroInstanceNumber * StateNumber -> BOOLEAN
 function selectAgentsDecision : LIST * NUMBER * NUMBER -> SET
 
-function selectAgentsProcessID : LIST * NUMBER * NUMBER -> STRING
-function selectAgentsSubjectID : LIST * NUMBER * NUMBER -> STRING
-function selectAgentsCountMin  : LIST * NUMBER * NUMBER -> NUMBER
-function selectAgentsCountMax  : LIST * NUMBER * NUMBER -> NUMBER
+function selectAgentsProcessModelID : LIST * NUMBER * NUMBER -> STRING
+function selectAgentsSubjectID      : LIST * NUMBER * NUMBER -> STRING
+function selectAgentsCountMin       : LIST * NUMBER * NUMBER -> NUMBER
+function selectAgentsCountMax       : LIST * NUMBER * NUMBER -> NUMBER
 
 function selectAgentsResult : LIST * NUMBER * NUMBER -> SET
 
@@ -2773,18 +2774,18 @@ rule SelectAgentsAction(MI, currentStateNumber, args) =
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule SelectAgents(MI, currentStateNumber, sIDLocal, min, max) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber,
       PI = processInstanceFor(self) in
   let predefAgents = predefinedAgents(pID, sIDLocal),
       resolvedInterface = resolveInterfaceSubject(sIDLocal) in
-  let resolvedProcessID = nth(resolvedInterface, 1),
-      resolvedSubjectID = nth(resolvedInterface, 2) in
+  let resolvedProcessModelID = nth(resolvedInterface, 1),
+      resolvedSubjectID      = nth(resolvedInterface, 2) in
   if (selectAgentsDecision(ch, MI, s) != undef) then {
       local createdChannels := {} in
       seq
         foreach agent in selectAgentsDecision(ch, MI, s) do
-          if (resolvedProcessID = pID) then
+          if (resolvedProcessModelID = pID) then
             // local process, use own PI
             let ch = [pID, PI, sIDLocal, agent] in {
               InitializeSubject(ch)
@@ -2793,20 +2794,20 @@ rule SelectAgents(MI, currentStateNumber, sIDLocal, min, max) =
           else // external process, create new PI
             local newPI in
             seq
-              newPI <- StartProcess(resolvedProcessID,
-                                    resolvedSubjectID, agent)
+              newPI <- StartProcessModel(resolvedProcessModelID,
+                                         resolvedSubjectID, agent)
             next
-              add [resolvedProcessID, newPI,
+              add [resolvedprocessModelID, newPI,
                    resolvedSubjectID, agent] to createdChannels
       next
         selectAgentsResult(ch, MI, s) := createdChannels
 
       // reset for next iteration
-      selectAgentsDecision (ch, MI, s) := undef
-      selectAgentsCountMin (ch, MI, s) := undef
-      selectAgentsCountMax (ch, MI, s) := undef
-      selectAgentsProcessID(ch, MI, s) := undef
-      selectAgentsSubjectID(ch, MI, s) := undef
+      selectAgentsDecision      (ch, MI, s) := undef
+      selectAgentsCountMin      (ch, MI, s) := undef
+      selectAgentsCountMax      (ch, MI, s) := undef
+      selectAgentsProcessModelID(ch, MI, s) := undef
+      selectAgentsSubjectID     (ch, MI, s) := undef
 
       SetExecutionState(MI, s, REPEAT)
   }
@@ -2819,11 +2820,11 @@ rule SelectAgents(MI, currentStateNumber, sIDLocal, min, max) =
                        "SelectAgentsDecision")) then {
     add "SelectAgentsDecision" to wantInput(ch, MI, s)
 
-    selectAgentsProcessID(ch, MI, s) := resolvedProcessID
-    selectAgentsSubjectID(ch, MI, s) := resolvedSubjectID
-    selectAgentsCountMin (ch, MI, s) := min
-    selectAgentsCountMax (ch, MI, s) := max
-    selectAgentsResult   (ch, MI, s) := undef
+    selectAgentsProcessModelID(ch, MI, s) := resolvedProcessModelID
+    selectAgentsSubjectID     (ch, MI, s) := resolvedSubjectID
+    selectAgentsCountMin      (ch, MI, s) := min
+    selectAgentsCountMax      (ch, MI, s) := max
+    selectAgentsResult        (ch, MI, s) := undef
 
     SetExecutionState(MI, s, DONE)
   }

@@ -45,19 +45,19 @@ The specification makes use of concepts of \textit{asynchronous multi-agent Turb
 Each \textit{process instance} has a unique \textit{ProcessInstanceID} (short: \asminline{PI}) assigned. 
 Within a process instance multiple instances of a subject (\textit{Subject~ID}) can exist (Multi Subject concept). Each subject instance has an \textit{agent} assigned, in order to distinguish subject instances and to keep track of its current $"state"$\footnote{State is in the sense of which subject data is present, the content of the input pool queues and also the active SBD states}. The agent is identified by its name.
 
-Therefore a subject instance is identified by the tuple \textit{(Process~Model~ID, Process~Instance~ID, Subject~ID, Agent~Name)}. This tuple is called \textbf{Channel} (short: \asminline{ch}). The concept of Channel itsef is used in the \textit{"mobility of channels concept"} in order to support distributed communication patterns. The overall subject \textit{"state"} is stored in the following ASM functions and assigned to the \textit{Channel}.
+Therefore a subject instance is identified by the tuple \textit{(Process~Model~ID, Process~Instance~ID, Subject~ID, Agent~Name)}. This tuple is called \textbf{Channel} (short: \asminline{ch}). The concept of Channel itself is used in the \textit{"mobility of channels concept"} in order to support distributed communication patterns. The overall subject \textit{"state"} is stored in the following ASM functions and assigned to the \textit{Channel}.
 
 \begin{listing}[htbp]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 // ASM Agent -> Channel
 function channelFor : Agents -> LIST
 
-derived processIDFor(a)       = processIDOf(channelFor(a))
+derived processModelIDFor(a)  = processModelIDOf(channelFor(a))
 derived processInstanceFor(a) = processInstanceOf(channelFor(a))
 derived subjectIDFor(a)       = subjectIDOf(channelFor(a))
 derived agentFor(a)           = agentOf(channelFor(a))
 
-derived processIDOf(ch)       = nth(ch, 1)
+derived processModelIDOf(ch)  = nth(ch, 1)
 derived processInstanceOf(ch) = nth(ch, 2)
 derived subjectIDOf(ch)       = nth(ch, 3)
 derived agentOf(ch)           = nth(ch, 4)
@@ -69,11 +69,11 @@ derived agentOf(ch)           = nth(ch, 4)
 In the function \asminline{channelFor} the assignment from the ASM Agents to their \textit{Channels} is stored.
 The \textit{derived functions} are used to lookup certain tuple elements of the channel.\\
 
-% NOTE: StartProcess and StartASMAgent left out intentionally
+% NOTE: StartProcessModel and StartASMAgent left out intentionally here
 
 % Subject Data / Data Objects
 
-Analogous to programming languages, Data Objects are called \textit{Variables}.Their scope is either bound to a Subject or a Macro Instance and can only be accessed by the Subject. Variables are identified by their name and have an explicit data type and a value.
+Analogous to programming languages, Data Objects are called \textit{Variables}. Their scope is either bound to a Subject or a Macro Instance and can only be accessed by the Subject. Variables are identified by their name and have an explicit data type and a value.
 
 Variables are stored in the \asminline{variable} "function" which maps the triple of the Subject's Channel (a list), the scoped Macro Instance~ID (a Number) and the Variable's name (a String) to a pair of the data type and value (another List). For Variables that are not scoped to a Macro Instance, and are therefore accessible for any state in any Macro Instance of the Subject, the general Macro Instance~ID~$0$ is used.
 
@@ -190,7 +190,7 @@ rule Behavior(MI, currentStateNumber) =
     if (transitionCompleted(ch, MI, t) != true) then
       PerformTransition(MI, s, t)
     else
-      Proceed(MI, s, targetStateNumber(processIDFor(self), t))
+      Proceed(MI, s, targetStateNumber(processModelIDFor(self), t))
 \end{minted}
 \caption{Behavior}
 \label{lst:shortasm:Behavior}
@@ -339,7 +339,7 @@ The global function \asminline{nextCorrelationID} is used to increment Correlati
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule StartSend(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   // there must be exactly one transition
   let  t = first_outgoingNormalTransition(pID, s) in {
@@ -450,11 +450,11 @@ The \asminline{DoReservations} rule iterates over all receivers that did not alr
 rule DoReservation(MI, currentStateNumber, receiverChannel) =
   if (properTerminated(receiverChannel) = true) then
     let ch = channelFor(self),
-       pID = processIDFor(self),
+       pID = processModelIDFor(self),
        sID = subjectIDFor(self),
          s = currentStateNumber in
     let Rch = receiverChannel,
-       RpID = processIDOf(receiverChannel) in
+       RpID = processModelIDOf(receiverChannel) in
     let sIDX = searchSenderSubjectID(pID, sID, RpID) in
     let msgCID = messageCorrelationID(ch, MI, s),
         RCID   = messageReceiverCorrelationID(ch, MI, s) in
@@ -495,7 +495,7 @@ When the queue at \asminline{inputPool(rCh, xSID, msgType, dstCorr)} was not cre
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule TryCompletePerformSend(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   if (anyNonProperTerminated(receivers(ch, MI, s)) = true) then
     if (shouldTimeout(ch, MI, s) = true) then {
@@ -526,7 +526,7 @@ After all reservations could be placed the \asminline{TryCompletePerformSend} ru
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransitionSend(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in {
     foreach r in reservationsDone(ch, MI, s) do {
       ReplaceReservation(MI, s, r)
@@ -559,11 +559,11 @@ The transition function calls the \asminline{ReplaceReservation} rule to replace
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule ReplaceReservation(MI, currentStateNumber, receiverChannel) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
      sID = subjectIDFor(self),
        s = currentStateNumber in
   let Rch  = receiverChannel,
-      RpID = processIDOf(receiverChannel) in
+      RpID = processModelIDOf(receiverChannel) in
   let t  = first_outgoingNormalTransition(pID, s) in
   let mT = messageType(pID, t) in
   let sIDX   = searchSenderSubjectID(pID, sID, RpID),
@@ -606,11 +606,11 @@ To abort the Send Function all placed reservations have to be removed.
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule CancelReservation(MI, currentStateNumber, receiverChannel) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
      sID = subjectIDFor(self),
        s = currentStateNumber in
   let Rch  = receiverChannel,
-      RpID = processIDOf(receiverChannel) in
+      RpID = processModelIDOf(receiverChannel) in
   let t  = first_outgoingNormalTransition(pID, s) in
   let mT = messageType(pID, t) in
   let sIDX   = searchSenderSubjectID(pID, sID, RpID),
@@ -642,7 +642,7 @@ In the beginning of the state function the Timeout is started and then checked e
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformReceive(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   // startTime must be the time of the first attempt to receive
   // in order to support receiving with timeout=0
@@ -693,7 +693,7 @@ When exactly one auto transition is enabled, and no transition had been selected
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule CheckIP(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   let sID      = messageSubjectId         (pID, t),
       mT       = messageType              (pID, t),
@@ -721,7 +721,7 @@ When there are sufficient Messages, from different Agents of a MultiSubject, ava
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTransitionReceive(MI, currentStateNumber, t) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   let sID      = messageSubjectId         (pID, t),
       mT       = messageType              (pID, t),
@@ -759,7 +759,7 @@ The ModalSplit Function initiates parallel execution paths that will be joined a
 \begin{listing}[htbp]
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule ModalSplit(MI, currentStateNumber, args) =
-  let pID = processIDFor(self),
+  let pID = processModelIDFor(self),
         s = currentStateNumber in {
   // start all following states
   foreach t in outgoingNormalTransitions(pID, s) do
@@ -849,7 +849,7 @@ The state function has two phases: in the beginning the Macro Instance is create
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule CallMacro(MI, currentStateNumber, args) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   let childInstance = callMacroChildInstance(ch, MI, s) in
   if (childInstance = undef) then
@@ -900,7 +900,7 @@ When the Macro Instance has terminated its result is used to select the outgoing
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule InitializeMacroArguments(MI, mIDNew, MINew, givenSrcVNames) =
   local
-      dstVNames := macroArguments(processIDFor(self), mIDNew),
+      dstVNames := macroArguments(processModelIDFor(self), mIDNew),
       srcVNames := givenSrcVNames in
     while (|dstVNames| > 0) do {
       let dstVName = head(dstVNames),
@@ -929,7 +929,7 @@ The Terminate Function is used to terminate the current Macro Instance and has n
 \begin{minted}{lexer.py:CoreASMLexer -x}
 rule PerformTerminate(MI, currentStateNumber) =
   let ch = channelFor(self),
-     pID = processIDFor(self),
+     pID = processModelIDFor(self),
        s = currentStateNumber in
   if (|activeStates(ch, MI)| > 1) then
     AbortMacroInstance(MI, s)
